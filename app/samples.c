@@ -21,7 +21,7 @@ static struct sample_header {
 _Static_assert(sizeof header == 512, "sample bank header");
 static unsigned state, total, position;
 static uint32_t checksum, changed_at;
-static uint32_t crc32(uint32_t crc, unsigned offset, const uint8_t *p, unsigned bytes)
+static uint32_t samples_crc32(uint32_t crc, unsigned offset, const uint8_t *p, unsigned bytes)
 {
     /* Treat the stored CRC and commit word as zero, including split writes. */
     static const uint8_t zero[8] = {0};
@@ -136,7 +136,7 @@ void groove_samples_poll(void)
             state = 4;
             return;
         }
-        checksum = crc32(checksum, position, bytes, n);
+        checksum = samples_crc32(checksum, position, bytes, n);
         position += n;
     }
     if (position == total && (~checksum != header.crc || bind()))
@@ -203,7 +203,7 @@ int groove_samples_write(unsigned offset, const uint8_t *data, unsigned bytes)
         state = 4;
         return r;
     }
-    checksum = crc32(checksum, offset, data, bytes);
+    checksum = samples_crc32(checksum, offset, data, bytes);
     position += bytes;
     changed_at = fm1_millis();
     return 0;

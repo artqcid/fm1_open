@@ -105,8 +105,9 @@ next-free: **T-41**
       **Done 2026-10-20** — upstream-bound, merged to local `main` and
       `main-feature`; PR [#7](https://github.com/m-vave/fm1_open/pull/7)
       open. *(plan.md D)*
-- [ ] **T-32** Rename the file-local `crc32()` in `app/samples.c` to
-      `samples_crc32()` (namespace hygiene). *(plan.md D)*
+- [x] **T-32** Rename the file-local `crc32()` in `app/samples.c` to
+      `samples_crc32()` (namespace hygiene). **Done 2026-10-20** — web +
+      firmware builds green. *(plan.md D)*
 - [x] **T-33** Document in `app/audio_output.c` why the Bluetooth gain uses
       `output_gain * 2` while USB uses `>> 7` (16-bit vs Q23 scaling).
       **Done 2026-10-19.** *(plan.md D)*

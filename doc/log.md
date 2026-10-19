@@ -6,6 +6,12 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — T-32 `samples_crc32` rename
+
+- Renamed the file-local `crc32()` helper in `app/samples.c` to
+  `samples_crc32()` (definition + two call sites); `groove_crc32` untouched.
+- `.\build.bat --web` and `.\build.bat --package` green; lint OK.
+
 ## 2026-10-20 — T-31 upstream PR #7
 
 - Implemented T-31: `FM1_AUDIO_PORT_ROUTE` / `FM1_AUDIO_CLOCK_SEL` in

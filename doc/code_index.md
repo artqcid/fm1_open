@@ -65,6 +65,41 @@ a navigation index of symbols across the APP and web engine sources.
 |------|------|
 | fm1_controls snapshot | @{Name=fm1_controls snapshot; Kind=struct decl}.Kind |
 
+### app/fm_factory.c
+
+#### Functions
+
+| Return | Name | Parameters | Note |
+|--------|------|------------|------|
+| static FM1_DSP_CODE void | factory_init | void |  |
+| FM1_DSP_CODE void | groove_fm_factory | uint8_t p[156], unsigned program |  |
+
+### app/fm_library.c
+
+#### Functions
+
+| Return | Name | Parameters | Note |
+|--------|------|------------|------|
+| static FM1_DSP_CODE void | unpack7 | uint8_t raw[128], const uint8_t packed[112] |  |
+| static void | pack7 | uint8_t packed[112], const uint8_t raw[128] |  |
+| FM1_DSP_CODE void | groove_fm_unpack | uint8_t p[156], const uint8_t b[128] |  |
+| void | groove_fm_pack | uint8_t b[128], const uint8_t p[156] |  |
+| static int | voice_valid | const uint8_t raw[128] |  |
+| static uint32_t | checksum | const struct bank *b |  |
+| static int | conflict | void |  |
+| void | groove_fm_library_init | void |  |
+| unsigned | groove_fm_library_available | void |  |
+| FM1_DSP_CODE void | groove_fm_program | uint8_t p[156], unsigned program |  |
+| int | groove_fm_library_recover | void |  |
+| int | groove_fm_library_read | unsigned index, uint8_t raw[4096] |  |
+| int | groove_fm_library_write | unsigned index, const uint8_t raw[4096] |  |
+
+#### Static Assertions
+
+| Message |
+|---------|
+| DX7 bank and journal fit one sector |
+
 ### app/instrument.h
 
 #### Defines
@@ -72,6 +107,12 @@ a navigation index of symbols across the APP and web engine sources.
 | Name | Value |
 |------|-------|
 | GROOVE_STEP_ALT | (1U &lt;&lt; 13) |
+
+#### Functions
+
+| Return | Name | Parameters | Note |
+|--------|------|------------|------|
+| static inline unsigned | groove_delay_synced | unsigned value |  |
 
 #### Structs
 
@@ -101,6 +142,51 @@ a navigation index of symbols across the APP and web engine sources.
 | preset layout |
 | project v4 layout |
 
+### app/midi_router.c
+
+#### Defines
+
+| Name | Value |
+|------|-------|
+| WORD | _Atomic(unsigned) |
+| WORD | volatile unsigned |
+
+#### Functions
+
+| Return | Name | Parameters | Note |
+|--------|------|------------|------|
+| static FM1_AUDIO_CODE void | barrier | void |  |
+| FM1_AUDIO_CODE unsigned | groove_midi_mode | unsigned track |  |
+| void | groove_midi_defaults | struct groove_midi_config *c |  |
+| int | groove_midi_config_valid | const struct groove_midi_config *c |  |
+| static void | recover | unsigned port |  |
+| void | groove_midi_panic | void |  |
+| void | groove_midi_config_apply | const struct groove_midi_config *c |  |
+| void | groove_midi_clock_reset | void |  |
+| void | groove_midi_init | void |  |
+| unsigned | groove_midi_setting | unsigned track, unsigned parameter |  |
+| static FM1_AUDIO_CODE void | enqueue | unsigned lane, unsigned owner, unsigned ports, unsigned status, unsigned a, unsigned b |  |
+| FM1_AUDIO_CODE void | groove_midi_note | unsigned track, unsigned note, unsigned velocity |  |
+| FM1_AUDIO_CODE void | groove_midi_track_reset | unsigned track |  |
+| FM1_AUDIO_CODE void | groove_midi_transport | unsigned owner, uint8_t status |  |
+| FM1_AUDIO_CODE void | groove_midi_clock | unsigned owner, unsigned tempo |  |
+| static int | held_elsewhere | const struct output *o, unsigned owner, unsigned ch, unsigned note |  |
+| static void | deliver | unsigned port, unsigned owner, const uint8_t *m |  |
+| else | if | type == 0xb0 &amp;&amp; m[1] == 64 |  |
+| static void | send_event | unsigned owner, unsigned ports, const uint8_t *m |  |
+| static void | release_owner | unsigned owner, unsigned ports |  |
+| void | groove_midi_poll | void |  |
+| int | groove_midi_local | const uint8_t *m, size_t n |  |
+| void | groove_midi_fader | unsigned track, unsigned value |  |
+| int | groove_midi_clock_accept | unsigned source, uint8_t status |  |
+| void | fm1_app_midi_received | unsigned source, const uint8_t *m, size_t n |  |
+
+#### Structs
+
+| Name | Kind |
+|------|------|
+| output | @{Name=output; Kind=struct tag}.Kind |
+
 ### app/presets.c
 
 #### Functions
@@ -109,7 +195,7 @@ a navigation index of symbols across the APP and web engine sources.
 |--------|------|------------|------|
 | static unsigned | bar_root | const struct scene *s, unsigned bar |  |
 | static unsigned | bar_minor | const struct scene *s, unsigned bar |  |
-| FM1_DSP_CODE void | groove_fm_program | uint8_t p[156], unsigned tone |  |
+| static void | demo_voice | uint8_t p[156], unsigned tone |  |
 | static void | preset | struct groove_preset *p, const struct part *v |  |
 | else | if | v-&gt;source == GROOVE_303 |  |
 | int | groove_factory_build | unsigned index, struct groove_project *p |  |
@@ -172,6 +258,11 @@ a navigation index of symbols across the APP and web engine sources.
 | int | groove_factory_load | unsigned index |  |
 | int | groove_settings_radio | unsigned flags, unsigned role |  |
 | void | groove_settings_clock | unsigned mode |  |
+| void | groove_settings_midi | unsigned track, unsigned parameter, int delta |  |
+| static int | session_settings_valid | const struct session_settings *c |  |
+| static int | session_settings_load | unsigned before_project |  |
+| static int | session_settings_save | void |  |
+| int | groove_settings_track | unsigned track, unsigned parameter, int delta |  |
 | void | groove_project_init | void |  |
 | void | groove_project_poll | void |  |
 
@@ -183,9 +274,11 @@ a navigation index of symbols across the APP and web engine sources.
 | groove_project project | @{Name=groove_project project; Kind=struct decl}.Kind |
 | settings settings | @{Name=settings settings; Kind=struct decl}.Kind |
 | tuning_journal header | @{Name=tuning_journal header; Kind=struct decl}.Kind |
+| tuning_journal header | @{Name=tuning_journal header; Kind=struct decl}.Kind |
 | tuning_entry e | @{Name=tuning_entry e; Kind=struct decl}.Kind |
 | tuning_block block | @{Name=tuning_block block; Kind=struct decl}.Kind |
 | tuning_block block | @{Name=tuning_block block; Kind=struct decl}.Kind |
+| session_settings c | @{Name=session_settings c; Kind=struct decl}.Kind |
 
 #### Static Assertions
 
@@ -204,7 +297,7 @@ a navigation index of symbols across the APP and web engine sources.
 
 | Return | Name | Parameters | Note |
 |--------|------|------------|------|
-| static uint32_t | crc32 | uint32_t crc, unsigned offset, const uint8_t *p, unsigned bytes |  |
+| static uint32_t | samples_crc32 | uint32_t crc, unsigned offset, const uint8_t *p, unsigned bytes |  |
 | static void | unbind | void |  |
 | static int | valid | void |  |
 | static int | bind | void |  |
@@ -243,7 +336,6 @@ a navigation index of symbols across the APP and web engine sources.
 | static void | project_refresh | void |  |
 | static void | preset_refresh | void |  |
 | static char | edit_character | char old, int delta |  |
-| static int | clamp | int value, int low, int high |  |
 | static void | move_step | const struct groove_view *view, int delta, int pages |  |
 | static unsigned | navigation_mode | void |  |
 | static unsigned | encoder_active | const int16_t values[7] |  |
@@ -265,6 +357,7 @@ a navigation index of symbols across the APP and web engine sources.
 | static unsigned | tone_parameter | unsigned col |  |
 | static void | tone_label | unsigned parameter, unsigned value, const fm1_param_t *p, char out[12] |  |
 | static void | radio_line | unsigned slot, unsigned y, const char *value, uint16_t color |  |
+| else | if | effects_page &amp;&amp; i == 1 &amp;&amp; synced |  |
 | static void | leds | const struct groove_view *v, unsigned visible |  |
 | static void | draw_page_body | const struct fm1_ble_status *ble |  |
 | else | if | visible == STEPS |  |
@@ -279,11 +372,12 @@ a navigation index of symbols across the APP and web engine sources.
 | static void | draw_page | const struct fm1_ble_status *ble |  |
 | static void | draw | const struct fm1_ble_status *ble |  |
 | static void | paint_flush | void |  |
-| static int | release_keys | void |  |
+| static int | release_keys_except | uint32_t keep |  |
 | static int | preset_load | unsigned start, uint32_t now |  |
 | static void | toggle_step | unsigned step |  |
 | void | groove_screen_init | void |  |
 | static void | select_track | int delta |  |
+| void | groove_screen_tap | uint32_t now |  |
 | else | if | page == OVERVIEW |  |
 | else | if | action &lt;= 4 |  |
 | else | if | action &lt;= 7 |  |
@@ -367,8 +461,9 @@ a navigation index of symbols across the APP and web engine sources.
 | unsigned | groove_project_dirty | void |  |
 | void | groove_project_clean | void |  |
 | void | groove_edit_init | void |  |
+| static void | record_keys_reset | unsigned track |  |
+| void | groove_edit_track_reset | unsigned track |  |
 | void | groove_edit_checkpoint | unsigned operation |  |
-| int | groove_edit_undo | void |  |
 | void | groove_edit_record | unsigned enabled, unsigned track, unsigned step |  |
 | FM1_DSP_CODE unsigned | groove_edit_recording | void |  |
 | unsigned | groove_edit_error | void |  |
@@ -379,12 +474,6 @@ a navigation index of symbols across the APP and web engine sources.
 | unsigned | groove_midi_activity | unsigned track |  |
 | void | groove_edit_poll | void |  |
 | else | if | velocity |  |
-| int | groove_edit_copy | unsigned track, unsigned step, unsigned scope |  |
-| int | groove_edit_paste | unsigned track, unsigned step, unsigned scope |  |
-| int | groove_edit_clear | unsigned track, unsigned step, unsigned scope |  |
-| int | groove_edit_repeat | unsigned track, unsigned steps |  |
-| int | groove_timbre_export | unsigned track, uint8_t *data, unsigned capacity |  |
-| int | groove_timbre_import | unsigned track, const uint8_t *data, unsigned bytes |  |
 
 #### Structs
 
@@ -422,7 +511,7 @@ a navigation index of symbols across the APP and web engine sources.
 | static FM1_DSP_CODE unsigned | step_pulses | const struct clock_state *c |  |
 | static FM1_DSP_CODE unsigned | gate_value | const struct groove_step *v |  |
 | static FM1_DSP_CODE void | sequence_event | void |  |
-| unsigned | groove_clock_mode | void |  |
+| FM1_DSP_CODE unsigned | groove_clock_mode | void |  |
 | FM1_DSP_CODE void | groove_sequence_position | unsigned position |  |
 | FM1_DSP_CODE void | groove_sequence_transport | uint8_t status |  |
 | else | if | status == 0xfc |  |
@@ -433,6 +522,7 @@ a navigation index of symbols across the APP and web engine sources.
 | unsigned | groove_sequence_rewound | void |  |
 | FM1_DSP_CODE unsigned | groove_sequence_record_position | unsigned track |  |
 | unsigned | groove_sequence_length | unsigned track |  |
+| unsigned | groove_tempo_current | void |  |
 | void | groove_sequence_view | unsigned track, unsigned step, struct groove_view *v |  |
 | uint64_t | groove_drum_steps | unsigned track, unsigned drum |  |
 | void | groove_sequence_read | unsigned track, unsigned first, struct groove_step *cells, unsigned count |  |
@@ -467,6 +557,8 @@ a navigation index of symbols across the APP and web engine sources.
 | int | fm1_flash_write | uint32_t at, const void *data, size_t bytes |  |
 | int | fm1_flash_erase | uint32_t at |  |
 | int | fm1_flash_invalidate | uint32_t at, size_t bytes |  |
+| int | fm1_midi_send_port | unsigned port, const uint8_t *data, size_t bytes |  |
+| int | fm1_midi_send | const uint8_t *data, size_t bytes |  |
 | int | fm1_midi_post | const uint8_t *data, size_t bytes |  |
 | static void | send | const uint8_t *data, unsigned bytes |  |
 | else | if | kind == 3 &amp;&amp; index == 0 &amp;&amp; value &gt;= 0 &amp;&amp; value &lt;= 1023 |  |
@@ -481,6 +573,8 @@ a navigation index of symbols across the APP and web engine sources.
 | Name | Value |
 |------|-------|
 | STATUS_WORD | _Atomic(uint32_t) |
+| SESSION_PAUSE | fm1_web_pause |
+| SESSION_RESUME | fm1_web_resume |
 
 #### Functions
 
@@ -501,6 +595,8 @@ a navigation index of symbols across the APP and web engine sources.
 | int | groove_tuning_set | unsigned track, const struct groove_tuning *t |  |
 | void | groove_tuning_get | unsigned track, struct groove_tuning *t |  |
 | void | groove_tuning_alt_hold | unsigned track, unsigned on |  |
+| int | groove_tuning_capture | struct groove_tuning t[GROOVE_TRACKS] |  |
+| int | groove_tuning_apply | const struct groove_tuning t[GROOVE_TRACKS] |  |
 | static FM1_DSP_CODE void | engine_note | unsigned track, unsigned note, unsigned velocity, int cents |  |
 | FM1_DSP_CODE void | groove_note | unsigned track, unsigned note, unsigned velocity, int sequenced |  |
 | FM1_DSP_CODE unsigned | groove_alt_held | unsigned track |  |
@@ -572,6 +668,8 @@ a navigation index of symbols across the APP and web engine sources.
 | Name | Kind |
 |------|------|
 | groove_fm_controls controls | @{Name=groove_fm_controls controls; Kind=struct decl}.Kind |
+| groove_preset preset | @{Name=groove_preset preset; Kind=struct decl}.Kind |
+| groove_tuning tuning | @{Name=groove_tuning tuning; Kind=struct decl}.Kind |
 | groove_fm_controls controls | @{Name=groove_fm_controls controls; Kind=struct decl}.Kind |
 | source next | @{Name=source next; Kind=struct decl}.Kind |
 | groove_sequence_options options | @{Name=groove_sequence_options options; Kind=struct decl}.Kind |
@@ -589,15 +687,6 @@ a navigation index of symbols across the APP and web engine sources.
 | one cache line per track |
 | independent arpeggiator cache lines |
 
-### web/engine/tuning.c
-
-#### Functions
-
-| Return | Name | Parameters | Note |
-|--------|------|------------|------|
-| int | groove_tuning_capture | struct groove_tuning t[GROOVE_TRACKS] |  |
-| int | groove_tuning_apply | const struct groove_tuning t[GROOVE_TRACKS] |  |
-
 ---
 
-Generated from 16 source file(s) with 375 symbol(s).
+Generated from 18 source file(s) with 430 symbol(s).
