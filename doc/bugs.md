@@ -47,9 +47,13 @@ Borrowed from `artqcid/wogd-ddsp-trainer` (see
 
 ## Open
 
+*(none)*
+
+## Fixed
+
 ## BUG-001 - `build.bat` fails under PowerShell 7: `Get-FileHash` not found
 
-- `status:` open
+- `status:` fixed
 - `found:` 2026-10-19
 - `area:` tooling
 - `severity:` major
@@ -76,7 +80,13 @@ Borrowed from `artqcid/wogd-ddsp-trainer` (see
   running `pwsh` process** — PowerShell 7 re-appends its own
   `$PSHOME\Modules` at startup, so neither a parent-shell assignment nor a
   VS Code `options.env` block survives the `pwsh` hop.
+  **Fixed (2026-10-20):** `build.bat` now prefers `pwsh`; the 5.1 fallback
+  resets `PSModulePath` to the Windows-PowerShell paths. Both build modes
+  verified green on V14.
 - `history:` (append-only, newest first)
+  - 2026-10-20 fixed: `build.bat` prefers `pwsh`; the 5.1 fallback resets
+    `PSModulePath`. `.\build.bat --web` and `--package` verified green on V14.
+    Local `main-feature` fix (no upstream PR, per branch policy).
   - 2026-10-19 second occurrence via the VS Code task. Two distinct traps:
     (a) the task passed the setup as an inline `-Command` string, which VS
     Code sends through two PowerShell parsers — the inner single quotes were
@@ -90,8 +100,6 @@ Borrowed from `artqcid/wogd-ddsp-trainer` (see
     shell; isolated via `-File` vs `-Command` and `pwsh` vs `cmd` A/B tests;
     workaround applied in `.vscode/tasks.json` (upstream `build.bat` /
     `tools/Build-Web.ps1` untouched — upstream diff kept minimal).
-
-## Fixed
 
 ## BUG-002 - Installed toolchain `C:\JL\pi32` does not match `sdk/manifest.json`
 

@@ -6,6 +6,17 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — V14 upstream merge + BUG-001/T-40 fixed
+
+- Merged upstream **V14** (`4d26685`, tag `V14`) into `main-feature`;
+  resolved the `README.md` build-section conflict (kept the `.env.example`
+  pointer plus the new `-LocalPreview` hint). Both builds green on V14.
+- **T-40 done:** BUG-001 fixed locally on `main-feature` — `build.bat` now
+  prefers `pwsh`, with a `powershell.exe` fallback that resets `PSModulePath`.
+  No upstream PR (branch policy: only T-28/T-31 go to `main`).
+- Verified: `.\build.bat --web` → `build/preview/index.html`;
+  `.\build.bat --package` → firmware image + workbench.
+
 ## 2026-10-20 — Upstream-bound main policy + effective task order
 
 - **T-28** (split `app/screen.c`) and **T-31** (audio register constants) are

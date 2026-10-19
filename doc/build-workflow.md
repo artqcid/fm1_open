@@ -43,25 +43,11 @@ $env:FM1_WASI_SDK   = 'C:\wasi-sdk-27'
 
 ### PowerShell 7 pitfall (BUG-001)
 
-When the caller is PowerShell 7 (`pwsh`), `build.bat` fails with
-`CommandNotFoundException: Get-FileHash`: the 5.1 `powershell.exe` spawned
-via `cmd` inherits `pwsh`'s `PSModulePath` and then loads the PowerShell 7
-copy of `Microsoft.PowerShell.Utility`, which 5.1 cannot import. Reset the
-variable first:
-
-~~~powershell
-$env:PSModulePath = 'C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules'
-~~~
-
-**Important:** the reset only works when it happens **inside the running
-`pwsh` process**. PowerShell 7 re-appends its own `$PSHOME\Modules` at
-startup, so a value inherited from a parent shell (or a VS Code
-`options.env` block) is overwritten on the `pwsh` hop and the failure
-returns. Never pass the setup as an inline `-Command` string to a VS Code
-task either — VS Code feeds it through two PowerShell parsers, the inner
-quotes are stripped and `… = C:\Program Files\…` splits into bogus
-commands. The tasks therefore call `.vscode/build.ps1` with `-File`.
-Full record: BUG-001.
+**Fixed 2026-10-20:** `build.bat` now prefers `pwsh`. Only when `pwsh` is
+missing does it fall back to `powershell.exe` (5.1), and that branch resets
+`PSModulePath` to the two Windows-PowerShell folders before launching, so
+`Get-FileHash` always auto-loads. A bare `.\build.bat --web` / `--package`
+from a `pwsh` shell works without a manual reset. Full record: BUG-001.
 
 ### Stale `LIB` pitfall (packaging step)
 

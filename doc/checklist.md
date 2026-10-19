@@ -113,9 +113,10 @@ next-free: **T-41**
       `doc/code_index.md` (RAG-style symbol index for `app/` + `web/engine/`).
       **Done 2026-10-19** — 16 files / 375 symbols; linked from `index.md`.
       *(plan.md C — enabler for T-28)*
-- [ ] **T-40** Decide BUG-001: open a minimal upstream PR (`build.bat` prefers
+- [x] **T-40** Decide BUG-001: open a minimal upstream PR (`build.bat` prefers
       `pwsh` with a `powershell.exe` fallback) **or** mark it `wont-fix` with a
-      reason. *(plan.md D)*
+      reason. **Done 2026-10-20** — fixed locally on `main-feature` (no upstream
+      PR per branch policy); BUG-001 is now `fixed`. *(plan.md D)*
 - [ ] **T-28** Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page
       units behind a shared `app/screen_common.h`. Needs T-39; confirm with
       ARCHITECT/BUILD first. **Upstream-bound: base on `main`, PR to

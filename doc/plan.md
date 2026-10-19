@@ -93,7 +93,7 @@ dependency-ordered plan.
 | --- | --- | --- | --- |
 | T-31 | Replace the bare-metal register addresses in `app/board/audio.c` (`0x51030`, `0x10014`) with named constants in `app/board/fm1_audio.h` — **upstream-bound (`main`), PR: pending** | code | No magic I/O addresses without a symbolic name |
 | T-32 | Rename the file-local `crc32()` in `app/samples.c` to `samples_crc32()` (namespace hygiene; the public symbol is `groove_crc32`) | code | No unprefixed file-local symbols |
-| T-40 | Decide BUG-001's fate: open a minimal upstream PR (make `build.bat` prefer `pwsh` with a `powershell.exe` fallback) **or** mark it `wont-fix` with a reason | decision | `doc/bugs.md` BUG-001 status reflects the decision |
+| T-40 | Decide BUG-001's fate: open a minimal upstream PR (make `build.bat` prefer `pwsh` with a `powershell.exe` fallback) **or** mark it `wont-fix` with a reason — **done 2026-10-20: fixed locally on `main-feature`** | decision | `doc/bugs.md` BUG-001 status reflects the decision |
 
 ## Group E — Automated testing (large, 4–8 h each)
 
