@@ -72,6 +72,22 @@ sample-bank header CRC plus write-order rejection. Artifacts stay in
 `%TEMP%\opencode\fm1_host_test`; the script never writes into the repo.
 **Status: green** (2026-10-20).
 
+## Level 2c - WASM behaviour checks (T-30)
+
+Needs Node.js (no npm packages) and a completed `.\build.bat --web` (emits
+`build/web/simulator.wasm`). Evaluates `sdk/Simulator.js` without a DOM, which
+exposes `FM1SimulatorCore` and returns before the browser UI boots.
+
+~~~powershell
+node tests\wasm\fm1_wasm_test.mjs
+~~~
+
+Drives the same `sim_*` boundary as the browser: rejects oversized MIDI and
+wrong-length project/patch/sample/library payloads, checks init exports
+(128-frame block, 225-byte state, 57,600 pixels), then asserts a step toggle
+and a tuning import (`-127`, `-128` rejection, CRC) are visible through the
+exported project. **Status: green** (2026-10-20).
+
 ## Level 3 — On-device acceptance protocol (manual, scripted)
 
 Not automated — run on real hardware after any change that can be heard, felt
@@ -112,8 +128,6 @@ updates.**
 
 ## Possible future work (not started)
 
-- T-30: a Node.js WASM harness driving `sdk/Simulator.js` (`sim_*` exports)
-  for sequencer / tuning behaviour without hardware.
 - Level 3 stays manual until real hardware is available.
 
 Record decisions about this in `doc/checklist.md` and `doc/log.md`.

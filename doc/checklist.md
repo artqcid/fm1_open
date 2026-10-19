@@ -121,10 +121,12 @@ next-free: **T-41**
       `pwsh` with a `powershell.exe` fallback) **or** mark it `wont-fix` with a
       reason. **Done 2026-10-20** — fixed locally on `main-feature` (no upstream
       PR per branch policy); BUG-001 is now `fixed`. *(plan.md D)*
-- [ ] **T-28** Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page
-      units behind a shared `app/screen_common.h`. Needs T-39; confirm with
-      ARCHITECT/BUILD first. **Upstream-bound: base on `main`, PR to
-      `m-vave/fm1_open`; PR: pending.** *(plan.md F)*
+- [ ] **T-28** Split `app/screen.c` (2,994 lines) into a three-layer
+      architecture: `screen_gfx.h/.c` (reusable pixel kit), `screen_page.h`
+      (mid-layer contract), 9 page modules, `screen_control.c`,
+      `screen_web.c`; `screen.c` slims to ~300 lines. Full plan:
+      [`doc/screen-split-plan.md`](./screen-split-plan.md). **Upstream-bound:
+      base on `main`, PR to `m-vave/fm1_open`; PR: pending.** *(plan.md F)*
 - [x] **T-15** Decide whether a host-side check harness is wanted. **Decided
       2026-10-19: yes** → implemented as T-29 (host C harness via
       `FM1_HOST_TEST`). Closed 2026-10-20 as superseded by T-29.
@@ -138,9 +140,10 @@ next-free: **T-41**
       `samples.c` header CRC, tuning capture/apply validation). No new
       framework; artifacts to `%TEMP%\opencode`. **Done 2026-10-20** —
       `pwsh tests\host\run.ps1` green. *(plan.md E)*
-- [ ] **T-30** Build a lightweight Node.js WASM harness driving the `sim_*`
+- [x] **T-30** Build a lightweight Node.js WASM harness driving the `sim_*`
       exports of `sdk/Simulator.js` (boundary rejects + sequencer/tuning
-      behaviour). *(plan.md E)*
+      behaviour). **Done 2026-10-20** - `node tests\wasm\fm1_wasm_test.mjs`
+      green against `build/web/simulator.wasm`. *(plan.md E)*
 - [ ] **T-24** Run the Level-3 on-device protocol (`doc/test-strategy.md`) once
       T-11 produced a flashable image; file every fail as `BUG-<n>` in
       `doc/bugs.md`. Also re-run after T-28. *(plan.md F verification)*

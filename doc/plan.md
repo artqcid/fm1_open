@@ -33,7 +33,7 @@ dependency-ordered plan.
    them into local `main`, and submit a PR to `m-vave/fm1_open`; propagate to
    `main-feature` afterwards. Never mix other work into `main`.
 6. **Effective order of the open tasks:** bookkeeping (T-15/T-21) → T-31 →
-   T-32 → T-40 → T-23 → T-29 → T-30 → T-24 (hardware) → T-28 (last; needs
+   T-32 → T-40 → T-23 → T-29 → T-30 (done) → T-24 (hardware) → T-28 (last; needs
    ARCHITECT/BUILD and Group E).
 
 ## Group A — Quick wins (≤ 30 min each, low risk)
@@ -104,7 +104,7 @@ hardware.
 | ID | Task | Scope | DoD |
 | --- | --- | --- | --- |
 | T-29 | Activate a host-side C harness via the existing `FM1_HOST_TEST` switch (builds `FM1_AUDIO_CODE`/`FM1_AUDIO_DATA` as no-ops) and cover pure APP logic — **done 2026-10-20** (`tests/host/run.ps1`) | testing | Host build + checks for `project.c`/`samples.c` run green from the scratch dir |
-| T-30 | Build a lightweight Node.js WASM harness driving the `sim_*` exports of `sdk/Simulator.js` | testing | Script asserts boundary rejects + sequencer/tuning behaviour against the WASM build |
+| T-30 | Build a lightweight Node.js WASM harness driving the `sim_*` exports of `sdk/Simulator.js` - **done 2026-10-20** (`tests/wasm/fm1_wasm_test.mjs`) | testing | Script asserts boundary rejects + sequencer/tuning behaviour against the WASM build |
 
 **T-29 detail.** `FM1_HOST_TEST` already exists in `sdk/include/fm1.h`; it
 compiles the audio section attributes away. A host compiler (MSVC `cl` or
@@ -115,11 +115,13 @@ validation (`-128` rejection, all-or-nothing). **No new test framework** — a
 plain `main()` returning non-zero on failure is enough. All artifacts go to
 `%TEMP%\opencode` (AGENTS.md scratch rule).
 
-**T-30 detail.** `build/preview` already contains the WASM build; `sdk/
-Simulator.js` exports `sim_*`. A single Node script (no npm dependencies) loads
-the build and asserts: wrong-length MIDI/patch/sample inputs are rejected
+**T-30 detail.** `build.bat --web` emits `build/web/simulator.wasm`; `sdk/
+Simulator.js` exposes `FM1SimulatorCore` and returns before the browser UI
+boots when `document` is undefined. A single Node script (no npm dependencies)
+loads the build and asserts: wrong-length MIDI/patch/sample inputs are rejected
 (the documented boundary checks), `sim_*` init succeeds, and a sequencer/tuning
-edit is observable through the read-back exports. This is the only
+edit is observable through the read-back exports. Run
+`node tests/wasm/fm1_wasm_test.mjs` after `.\build.bat --web`. This is the only
 **behaviour**-level automated check available without hardware; syntax-only
 coverage is what `build.bat --web` already gives.
 
@@ -129,26 +131,25 @@ coverage is what `build.bat --web` already gives.
 | --- | --- | --- | --- |
 | T-28 | Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page units behind a shared header — **upstream-bound (`main`), PR: pending** | code/arch | Both builds green; page count unchanged; no behaviour change |
 
-**T-28 detail (architectural — confirm with ARCHITECT/BUILD before starting).**
+**T-28 detail — full architecture and step-by-step plan: [`doc/screen-split-plan.md`](./screen-split-plan.md)**
 
-- New `app/screen_common.h` owns the shared state (`track`, `page`, `cursor`,
-  `op`, the paint API, colour constants, the `font`/`algorithm` tables, the
-  glyph primitives `text`/`number`/`line`/`fill`).
-- New units: `screen_overview.c`, `screen_steps.c`,
-  `screen_fm.c` (FM_EDIT + FM_ENV + FM_LFO + FM_QUICK),
-  `screen_mix.c`, `screen_effects.c`, `screen_project.c`, `screen_ble.c`,
-  `screen_edit.c` (STEP_EDIT + RHYTHM + ACTIONS + ARP_EDIT),
-  `screen_browser.c` (PRESET_BROWSER).
-- `screen.c` shrinks to a dispatcher: `draw_page_body()` routes to per-page draw
-  functions; the shared `groove_screen_control()` input state machine stays.
+Key decisions (see plan doc for rationale and exact steps):
+
+- **Three-layer architecture** with two public header contracts:
+  `screen_gfx.h` (reusable pixel drawing kit — custom firmware entry point)
+  and `screen_page.h` (mid-layer page contract).
+- **11 new translation units** + 3 headers; `screen.c` slims to ~300 lines.
+  Each page group gets its own `.c`; input state machine in `screen_control.c`;
+  web adapter in `screen_web.c`.
+- Functions crossing TU boundaries are **renamed** with a `screen_` prefix
+  (e.g. `paint_fill` → `screen_fill`, `text` → `screen_text`).
+- **Build.ps1**: three exact `app/screen.c` flag matches replaced with
+  `\ -match '^app/screen'` pattern; `-fno-inline-functions` restricted
+  to `screen.c` and `screen_control.c` only.
 - **Must not change behaviour.** Verification: `.\build.bat --web` and
-  `.\build.bat --package` both green; on-device Level-3 protocol (T-24) after
-  the split.
-- **Branch:** upstream-bound — base on `main` and submit a PR to
-  `m-vave/fm1_open`; do not develop it on `main-feature`.
-- **Sequencing:** do this **after** T-39 (the code index makes the split safe
-  to delegate to subagents) and **after** Group E, so the new harness covers
-  the moved logic.
+  `.\build.bat --package` both green; WASM harness passes unchanged.
+- **Branch:** upstream-bound — base on `main`, PR to `m-vave/fm1_open`.
+- **Sequencing:** after T-39 (code index done ✓) and Group E (T-29, T-30 done ✓).
 
 ## Dependencies
 

@@ -6,6 +6,32 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — T-28 screen-split plan
+
+- Analysed `app/screen.c` (2,994 lines): paint layer, 10 page groups,
+  input state machine, web adapter.
+- Designed a three-layer architecture: `screen_gfx.h` (reusable pixel kit
+  — custom firmware entry point), `screen_page.h` (mid-layer page contract),
+  `screen_internal.h` (internal shared state).
+- Split into 11 new translation units; `screen.c` slims to ~300 lines.
+- Defined function rename table (`paint_fill` → `screen_fill`, etc.) and
+  `sdk/Build.ps1` flag pattern update.
+- Documented 12 ordered implementation steps (each independently verifiable
+  with `.\build.bat --web`) and PR description template.
+- Phase-2 follow-up items recorded (per-page input handlers, parameter passing).
+- New file: `doc/screen-split-plan.md`; checklist/plan/index updated.
+
+## 2026-10-20 — T-30 WASM behaviour harness
+
+- Added `tests/wasm/fm1_wasm_test.mjs`: no npm dependencies; evaluates
+  `sdk/Simulator.js` without a DOM and drives `FM1SimulatorCore` against
+  `build/web/simulator.wasm`.
+- Checks init exports, boundary rejects (MIDI >1024, project/patch/sample/
+  library lengths), a sequencer step round-trip, and tuning import/export
+  (`-127`, `-128` rejection, CRC).
+- `node tests/wasm/fm1_wasm_test.mjs` green; `.\build.bat --web` rebuilds the
+  WASM input.
+
 ## 2026-10-20 — T-29 host persistence harness
 
 - Added `tests/host/fm1_host_test.c` + `tests/host/run.ps1`: builds
