@@ -26,7 +26,8 @@ JieLi PI32v2 SoC.
 | Page | What it answers |
 | --- | --- |
 | [./log.md](./log.md) | What changed, when. Append-only, newest first. |
-| [./checklist.md](./checklist.md) | What is open right now (short task descriptions). |
+| [./plan.md](./plan.md) | **Tier-1 roadmap** — decisions, risks, task groups A–F. Status lives in `checklist.md`. |
+| [./checklist.md](./checklist.md) | What is open right now (short task descriptions, status). |
 | [./branch-workflow.md](./branch-workflow.md) | Where may I commit? `main` vs `main-feature` vs `feature/*`. |
 | [./coding-standards.md](./coding-standards.md) | Which coding rules apply (Clean Code Developer, C/FM1 adaptations)? |
 | [./test-strategy.md](./test-strategy.md) | What can actually be verified, and how? |
@@ -39,6 +40,7 @@ JieLi PI32v2 SoC.
 | --- | --- |
 | [./build-workflow.md](./build-workflow.md) | Build modes, env vars, toolchain, outputs, verification. |
 | [./architecture.md](./architecture.md) | APP vs binary engine, audio path, Web/WASM path, memory sections. |
+| [./code_index.md](./code_index.md) | **Generated** symbol finder across APP/web sources (regenerate with `tools/generate-code-index.ps1`). |
 | [./licensing.md](./licensing.md) | Which license applies to which file? Index into `LICENSE.md` / `THIRD_PARTY.md`. |
 
 ## References

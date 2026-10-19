@@ -173,8 +173,7 @@ Primary agents form a responsibility hierarchy:
 The main notebook for this project is **WOGD-FM1 Firmware**.
 
 - **Notebook name:** `WOGD-FM1 Firmware`
-- **Notebook ID:** _TBD — resolve via the `nbml-list` skill
-  (`notebook_list`) after the MCP server is loaded, then record it here._
+- **Notebook ID:** `a85eb2ec-cfaa-4f10-bb74-a1732bfae75c`
 - **MCP Server:** `notebooklm_devblogs`
 - **Config source:** `opencode.json` in this workspace root
 
@@ -246,38 +245,20 @@ pollute the upstream diff and can break `sdk/manifest.json` integrity checks.
 
 ## Quick facts
 
-- Entry point: `build.bat` → `sdk\Build.ps1`; web entry `tools\Build-Web.ps1`.
-- **Build modes:** `build.bat` (firmware), `build.bat --web` (browser
-  preview), `build.bat --package` (firmware + complete workbench).
-- **Required env vars:** `FM1_SOURCE_URL` (all builds — stops without it),
-  `FM1_PI32_TOOLCHAIN` (firmware; folder must contain `bin/clang.exe`),
-  `FM1_WASI_SDK` (optional, reuses an existing WASI SDK 27).
+- Entry: `build.bat` → `sdk\Build.ps1`; web: `tools\Build-Web.ps1`.
+- Modes: `build.bat` (firmware), `--web` (preview), `--package`
+  (firmware + complete workbench).
+- Environment: see `.env.example`; `FM1_SOURCE_URL` is mandatory for every
+  build, `FM1_PI32_TOOLCHAIN` for firmware. Details: `doc/build-workflow.md`.
 - Outputs: `build/preview/index.html`,
   `build/dx7/generated/FM1_OFFICIAL_OPEN.fwsc`,
   `build/official-web/FM1-Official-Open-Source.html`.
-- Toolchain hashes: `sdk/manifest.json` → `external_toolchain`.
-- Engine is **binary-only**: `sdk/lib/libfm1_engine.a` (no source).
-- Audio path: DMA IRQ → `fm1_audio_irq()` (`app/board/audio.c`) →
-  `fm1_engine_render()` → `fm1_output_mix()` (USB/BT mixing in
-  `app/audio_output.c`).
-- Version identity: `app/version.h` (`FM1_RELEASE_VERSION`,
-  `FM1_UPDATE_PRODUCT`).
-- Primary navigation: `doc/index.md`.
-- Bug tracking: `doc/bugs.md` — canonical ledger; `BUG-<n>` IDs and full
-  records live only there, every other page references the ID only.
-- Checklist: `doc/checklist.md` (open tasks, short descriptions, permanent
-  `T-nn` task IDs).
-- Chronological log: `doc/log.md` (append-only, newest first).
-- Build workflow: `doc/build-workflow.md`.
-- Architecture: `doc/architecture.md`.
-- Branch rules: `doc/branch-workflow.md`.
-- Coding rules (Clean Code Developer): `doc/coding-standards.md`.
-- Test strategy: `doc/test-strategy.md`.
-- Licensing map: `doc/licensing.md` (index into `LICENSE.md` /
-  `THIRD_PARTY.md`).
-- NotebookLM notebook: **WOGD-FM1 Firmware**.
-- Workspace file: `fm1_open.code-workspace`.
-- Remote `upstream` = `m-vave/fm1_open`; `origin` = `artqcid/fm1_open`.
+- Engine is **binary-only** (`sdk/lib/libfm1_engine.a`); audio path: DMA IRQ →
+  `fm1_audio_irq()` → `fm1_engine_render()` → `fm1_output_mix()`.
+- Version identity: `app/version.h`.
+- Navigation: `doc/index.md`; tasks `doc/checklist.md`; bugs `doc/bugs.md`
+  (`BUG-<n>`); changelog `doc/log.md`.
+- Remotes: `upstream` = `m-vave/fm1_open`; `origin` = `artqcid/fm1_open`.
 
 ## Global rules
 

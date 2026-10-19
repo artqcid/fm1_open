@@ -12,7 +12,7 @@ Select "Source + SDK" in the workbench to download the development kit matching 
 
 Requires Windows x64, PowerShell, `curl.exe` and `tar.exe`. Firmware builds also require the [JieLi PI32v2 clang 4.0.1 r3 compiler](https://doc.zh-jieli.com/Tools/zh-cn/dev_tools/dev_env/jl_toolchain.html); its folder must contain `bin/clang.exe`.
 
-Before running the commands below, set the `FM1_SOURCE_URL` environment variable to the HTTPS download URL of this build's source archive, including its changes, license notices and build/install scripts. Web and package builds stop if it is missing.
+Before running the commands below, set the `FM1_SOURCE_URL` environment variable to the HTTPS download URL of this build's source archive, including its changes, license notices and build/install scripts. Web and package builds stop if it is missing. A template for all build variables is provided in [`.env.example`](.env.example).
 
 ~~~powershell
 .\build.bat --web

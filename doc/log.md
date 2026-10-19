@@ -6,6 +6,71 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-19 — NotebookLM unblocked (T-05/T-06) + Machine LIB fixed (T-25)
+
+- **T-25 (done):** the elevated Machine `LIB` now points at the installed
+  MSVC 14.51 + Windows SDK paths (replacing the deleted VS 18 MSVC 14.50
+  entry) via a UAC-elevated `SetEnvironmentVariable`; the earlier User-level
+  override is superseded.
+- **T-05/T-06 (done):** `notebooklm-mcp-server` dependencies were upgraded;
+  the persistent 400 on `notebook_list` was a corrupted `auth.json`
+  (`csrf_token` == `session_id`) produced by the reauth script's CSRF
+  fallback. Fixed `reauth_nblm.py` to read `SNlM0e` from the raw page HTML.
+  Notebook ID `a85eb2ec-cfaa-4f10-bb74-a1732bfae75c` recorded in `AGENTS.md`;
+  the first Knowledge-Sync digest was pushed (source `a541f9df-…`).
+- Verification: `notebook_list` → 30 notebooks; digest present in the
+  notebook; `csrf != sid` after re-heal.
+
+## 2026-10-19 — Implementation Groups A–C (T-25…T-39)
+
+- **Docs:** `test-strategy.md` Level-2 status corrected to green (T-26);
+  `AGENTS.md` Quick facts trimmed to a pointer-only block (T-37);
+  `doc/build-workflow.md` task table now documents `fm1:check-repo` and the
+  external WASI SDK (T-36; README has no task table, so the canonical table
+  here was updated instead).
+- **Tooling:** added `tools/generate-code-index.ps1` → `doc/code_index.md`
+  (16 files / 375 symbols, linked from `index.md`; T-39) and
+  `tools/check-repo.ps1` (Level-4 hygiene, wired as `fm1:check-repo`; T-27).
+- **Environment:** `FM1_WASI_SDK=C:\wasi-sdk-27` (SDK moved out of the
+  gitignored `build/tools`; T-38 closes T-13); `.env.example` committed with
+  a `.gitignore` exception and referenced from `README.md` (T-34);
+  `problemMatcher: ["$gcc"]` on both build tasks (T-35).
+- **T-25 (partial):** User-level `LIB` override points at MSVC 14.51 +
+  Windows SDK; the stale Machine entry needs an elevated one-liner (the
+  interactive shell is not admin).
+- **T-05/T-06 blocked:** NotebookLM re-auth succeeds, but `notebook_list`
+  returns HTTP 400 (stale frontend build label in the MCP package); needs an
+  MCP-server update outside this repo.
+- Verification: `pwsh doc/lint.ps1` → **OK, 13 pages, exit 0**;
+  `pwsh tools/check-repo.ps1` → **all checks passed**;
+  `.\build.bat --web` (clean env) → **green**, `build/preview/index.html`
+  883 170 bytes, re-used `C:\wasi-sdk-27` (no re-download).
+
+## 2026-10-19 — Implementation plan: project review → roadmap (`plan.md`)
+
+- Project review (efficiency, dev environment, build process, agent rules,
+  docs, code) turned into a Tier-1 roadmap [`./plan.md`](./plan.md) with the
+  ordered task groups **A–F**, dependencies and risks. Closes **T-19**
+  (roadmap tier) — the backlog is now past the size where a single
+  `checklist.md` is enough.
+- **New tasks filed** (`next-free: T-41`): T-26 (fix stale Level-2 prose in
+  `test-strategy.md`), T-27 (`tools/check-repo.ps1` Level-4 hygiene check),
+  T-28 (split `app/screen.c`, ≈ 2 900 lines), T-29 (host C harness via
+  `FM1_HOST_TEST`), T-30 (Node WASM `sim_*` harness), T-31 (register symbols in
+  `audio.c`), T-32 (rename `crc32`→`samples_crc32`), T-33 (BT-gain comment),
+  T-34 (`.env.example`), T-35 (VS Code `problemMatcher`), T-36 (execute T-21),
+  T-37 (trim `AGENTS.md` quick facts), T-38 (close T-13 via `build.ps1`),
+  T-39 (code index), T-40 (BUG-001 decision).
+- **RAG decision (yes):** build a PowerShell-generated `doc/code_index.md`
+  (T-39) as a symbol *finder* for `app/` + `web/engine/`. No Python, no
+  post-commit hook — regeneration is manual / Post-Task-Sync. The binary engine
+  and `THIRD_PARTY.md` stay out of scope. Enabler for the T-28 split.
+- Task bookkeeping: T-15 decided (→ T-29), T-21 executed by T-36, T-13
+  executed by T-38; `checklist.md` restructured (new **Testing** section) and
+  `index.md` links `plan.md`.
+- Verification: `pwsh doc/lint.ps1` → **OK, 12 pages, exit 0**; `git status`
+  shows only the intended `doc/` changes, no stray build artifacts.
+
 ## 2026-10-19 — VS Code build tasks fixed (BUG-001 recurrence)
 
 - The integrated terminal task failed: VS Code passes an inline `-Command`

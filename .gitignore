@@ -21,6 +21,7 @@
 *.p12
 .env
 .env.*
+!.env.example
 *.pfx
 *.keystore
 id_rsa

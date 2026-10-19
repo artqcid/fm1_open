@@ -176,8 +176,9 @@ Outputs to expect:
 | Task | Effect |
 | --- | --- |
 | `FM-1: Build Firmware Package (.fwsc)` (default, Ctrl+Shift+B) | runs `pwsh -File .vscode/build.ps1 -Mode package` → resets `PSModulePath` *inside* pwsh (BUG-001), clears `LIB` (stale-VS pitfall), sets `FM1_SOURCE_URL` + `FM1_PI32_TOOLCHAIN=C:\JL\pi32-2.5.2\C$\JL\pi32`, then `build.bat --package` |
-| `FM-1: Build Web Preview` | `… -Mode web` → same resets, sets `FM1_SOURCE_URL`, then `build.bat --web` |
+| `FM-1: Build Web Preview` | `… -Mode web` → same resets, sets `FM1_SOURCE_URL`, reuses `FM1_WASI_SDK=C:\wasi-sdk-27` when present, then `build.bat --web` |
 | `fm1:lint` | runs `pwsh doc/lint.ps1` (required by the Post-Task Sync) |
+| `fm1:check-repo` | runs `pwsh tools/check-repo.ps1` (Level-4 repo hygiene; see T-27) |
 
 The environment setup lives in **`.vscode/build.ps1`**, not in the task's
 command line: a task `-Command` string would be re-parsed by two PowerShell
@@ -195,6 +196,11 @@ startup module-path re-append — see the BUG-001 section above.
   440 028 bytes, package fits 1 MiB (image 458 752 + VM 45 056 +
   user 536 576).
 - Both Definition-of-DoD build gates now pass on this machine.
+- `FM1_WASI_SDK`: **set** — `C:\wasi-sdk-27` (moved out of `build/tools`;
+  T-38). Web builds re-use it instead of re-downloading.
+- `LIB`: User-level override points at the installed MSVC 14.51 + Windows SDK
+  paths; the stale Machine entry still needs an elevated cleanup (T-25).
+- Repo hygiene: `pwsh tools/check-repo.ps1` → **green** (T-27).
 - **Cleanup 2026-10-19:** the superseded **2.5.3** installation that occupied
   `C:\JL` (`pi32/`, `commtools/`, `mc/`, `LicenseViewer.exe`,
   `RequestLicense.exe`, `UpdateDector.exe`, `ver.txt`, EULA `.rtf`,

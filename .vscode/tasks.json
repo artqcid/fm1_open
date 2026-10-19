@@ -23,7 +23,7 @@
         "reveal": "always",
         "panel": "shared"
       },
-      "problemMatcher": []
+      "problemMatcher": ["$gcc"]
     },
     {
       "label": "FM-1: Build Web Preview",
@@ -44,13 +44,26 @@
         "reveal": "always",
         "panel": "shared"
       },
-      "problemMatcher": []
+      "problemMatcher": ["$gcc"]
     },
     {
       "label": "fm1:lint",
       "type": "shell",
       "command": "pwsh",
       "args": ["-NoProfile", "-File", "${workspaceFolder}\\doc\\lint.ps1"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "fm1:check-repo",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}\\tools\\check-repo.ps1"],
       "options": { "cwd": "${workspaceFolder}" },
       "group": "test",
       "presentation": {

@@ -32,6 +32,9 @@ FM1_AUDIO_CODE void fm1_output_mix(int32_t *output)
             value += ((int64_t)usb_pcm[i] * ((i & 1U) ? right : left)) >> 7;
         output[i] = usb_frames == -2 ? 0 : limit(value);
     }
+    /* Bluetooth PCM is int16_t (+/-2^15).  output_gain*2 == (2^8)*(output_gain/128),
+     * i.e. the 16-bit->Q23 shift (x256) combined with the same Q7 gain used for USB
+     * (usb_pcm * gain >> 7).  The factor differs because of the wider source range. */
     if (fm1_bluetooth_audio_read(bluetooth_pcm, FM1_BLOCK_FRAMES) == FM1_BLOCK_FRAMES) {
         for (unsigned i = 0; i < FM1_BLOCK_WORDS; ++i)
             output[i] = limit((int64_t)output[i] + (int32_t)bluetooth_pcm[i] * (int32_t)(output_gain * 2U));

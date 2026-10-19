@@ -51,8 +51,10 @@ test suite (see `doc/build-workflow.md`): audio callback and panel tables in
 internal SRAM, fixed identity sizes, no stubbed Bluetooth discovery, link-map
 audits, heap/ACL pool minimums, startup matching the ROM entry.
 
-**Status in this workspace:** pending — `FM1_SOURCE_URL` and
-`FM1_PI32_TOOLCHAIN` are not configured. Never report this level as green.
+**Status in this workspace: green** (2026-10-19) — `FM1_SOURCE_URL` and the
+hash-pinned `FM1_PI32_TOOLCHAIN` (JieLi 2.5.2, BUG-002) are configured, so
+`.\build.bat --package` produces `build/dx7/generated/FM1_OFFICIAL_OPEN.fwsc`
+plus the complete workbench. See [`./build-workflow.md`](./build-workflow.md).
 
 ## Level 3 — On-device acceptance protocol (manual, scripted)
 

@@ -9,6 +9,10 @@ updated: 2026-10-19
 Short descriptions only. Keep entries small; expand into a `doc/*.md` page or a
 git issue when a task grows. Newest first inside each section.
 
+Grouping, rationale, dependencies and risks for the tasks below live in the
+**Tier-1 roadmap** [`./plan.md`](./plan.md); this file is the live status only.
+The `plan.md` groups A–F and the sections below reference the same `T-nn` IDs.
+
 Legend: `[ ]` open · `[~]` in progress / `[x]` done.
 **Task IDs (`T-nn`) are permanent** — assign the next free number in
 `next-free:` below, never reuse or renumber an ID. A deferred item is marked
@@ -16,7 +20,7 @@ Legend: `[ ]` open · `[~]` in progress / `[x]` done.
 `artqcid/wogd-ddsp-trainer`, see
 [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md)).
 
-next-free: **T-26**
+next-free: **T-41**
 
 ## Documentation & workspace
 
@@ -26,87 +30,129 @@ next-free: **T-26**
 - [x] **T-03** `.editorconfig` + `.vscode/` tasks.
 - [x] **T-04** `fm1_open.code-workspace`, project-level `opencode.json`
       (`notebooklm_devblogs` MCP).
-- [ ] **T-05** Resolve the NotebookLM notebook ID for **WOGD-FM1 Firmware** via
+- [x] **T-05** Resolve the NotebookLM notebook ID for **WOGD-FM1 Firmware** via
       the `nbml-list` skill once the MCP server is running; write it into
-      `AGENTS.md` (currently `TBD`).
-- [ ] **T-06** First Knowledge-Sync run: push `doc/log.md` digest to the notebook.
+      `AGENTS.md`. **Done 2026-10-19** — ID `a85eb2ec-cfaa-4f10-bb74-a1732bfae75c`.
+      The 400 was a corrupted `auth.json` (`csrf_token` == `session_id`); the
+      reauth script's CSRF extraction was fixed. *(plan.md A)*
+- [x] **T-06** First Knowledge-Sync run: push a `doc/log.md` digest to the
+      notebook. **Done 2026-10-19** — digest source
+      `a541f9df-d04d-4de5-94ac-bce34a8e2df7` in WOGD-FM1 Firmware. *(plan.md A)*
 - [x] **T-07** First `pwsh doc/lint.ps1` run: **OK, 9 pages, exit 0** (2026-10-19).
-
-## Build & environment (blocked until configured)
-
-- [x] **T-08** Set `FM1_SOURCE_URL` (HTTPS URL of the matching source archive) —
-      **done 2026-10-19:** `https://github.com/m-vave/fm1_open` (accepted by the
-      web build; baked into both VS Code build tasks **and** persisted as a
-      user-level environment variable — `$env:` alone is session-only).
-- [x] **T-09** Set `FM1_PI32_TOOLCHAIN` to a folder containing `bin/clang.exe`.
-      **Done 2026-10-19 (revised):** the hash-pinned **JieLi toolchain 2.5.2**
-      is extracted (no installer run) to `C:\JL\pi32-2.5.2\C$\JL\pi32` —
-      see BUG-002 for the full recipe. Persisted as a user-level environment
-      variable; the superseded `C:\JL` 2.5.3 install (which never matched
-      the SDK pin) has been deleted.
-- [x] **T-10** Run `.\build.bat --web` → confirm `build/preview/index.html`.
-      **Green 2026-10-19** (883 KB; WASI SDK 27 downloaded once into
-      `build/tools`). Needed the BUG-001 `PSModulePath` workaround.
-- [x] **T-11** Run `.\build.bat --package` → confirm
-      `build/dx7/generated/FM1_OFFICIAL_OPEN.fwsc`.
-      **Green 2026-10-19:** 440 028-byte app image, package fits 1 MiB;
-      `FM1_OFFICIAL_OPEN.fwsc` + `build/official-web/FM1-Official-Open-Source.html`
-      produced (after the BUG-002 fix and a session-level stale-`LIB` cleanup).
-- [x] **T-12** Verify `sdk/manifest.json` → `external_toolchain` hashes match the
-      toolchain actually in use. **Done 2026-10-19: 22/22 entries match** the
-      extracted 2.5.2 toolchain (initially found 4/5 mismatches → BUG-002).
-- [ ] **T-13** Optional: set `FM1_WASI_SDK` to an extracted WASI SDK 27 to avoid
-      the 518 MiB first-time download — the SDK now lives in `build/tools`
-      (re-downloaded after a `build/` wipe); exporting the variable keeps it
-      outside the gitignored `build/` tree.
-
-## Engineering (candidates, not yet planned)
-
-- [x] **T-14** Confirm toolchain availability and record it in
-      `doc/build-workflow.md` — the pinned 2.5.2 toolchain is extracted and
-      verified (22/22 manifest hashes) at `C:\JL\pi32-2.5.2\C$\JL\pi32`;
-      recipe and status recorded in the build workflow.
-- [ ] **T-25** Optional machine cleanup: the **system-wide** `LIB` environment
-      variable still lists a deleted Visual Studio 18 preview path
-      (`…\MSVC\14.50.35717\lib\x64`). Builds now clear `LIB` session-side,
-      but removing the stale entry from the machine environment avoids the
-      warning forever (user decision — changes the system, not the repo).
-- [ ] **T-15** Decide whether a host-side check harness is wanted
-      (`FM1_HOST_TEST` already exists in `sdk/include/fm1.h`).
-- [ ] **T-16** Gleanings: file findings from any debugging session back into `doc/`.
-- [ ] **T-24** Run the Level-3 on-device protocol
-      (`doc/test-strategy.md`) once **T-11** produced a flashable image; file
-      every fail as `BUG-<n>` in `doc/bugs.md`.
+- [x] **T-26** Fix stale prose: `doc/test-strategy.md` Level-2 still says
+      "pending" though both build gates are green since 2026-10-19. **Done
+      2026-10-19** — status now green. *(plan.md A)*
+- [x] **T-36** Execute T-21 for real: synchronise the documented task table
+      with `.vscode/tasks.json`. **Done 2026-10-19** — README has no task
+      table, so the canonical table in `doc/build-workflow.md` was updated
+      instead (adds `fm1:check-repo`). *(plan.md B, executes T-21)*
+- [x] **T-37** Trim the `AGENTS.md` "Quick facts" block to the minimum and
+      delegate detail to `doc/index.md`. **Done 2026-10-19.** *(plan.md B)*
+- [x] **T-19** **Consider when the backlog grows:** add a `doc/plan.md`
+      roadmap tier. **Done 2026-10-19** — `doc/plan.md` created (Tier-1;
+      groups A–F, decisions, risks). *(plan.md preamble)*
 - [ ] **T-23** Work through the `## Action items` table in `doc/licensing.md`
       (7 rows, all `open` except PR #2) and update statuses as each is verified.
+
+## Build & environment
+
+- [x] **T-08** Set `FM1_SOURCE_URL` — `https://github.com/m-vave/fm1_open`
+      (user-level env var, baked into the VS Code tasks), 2026-10-19.
+- [x] **T-09** Set `FM1_PI32_TOOLCHAIN` — hash-pinned **JieLi 2.5.2** extracted
+      to `C:\JL\pi32-2.5.2\C$\JL\pi32` (see BUG-002), 2026-10-19.
+- [x] **T-10** `.\build.bat --web` green → `build/preview/index.html` (883 KB),
+      2026-10-19.
+- [x] **T-11** `.\build.bat --package` green → `FM1_OFFICIAL_OPEN.fwsc`,
+      2026-10-19.
+- [x] **T-12** `sdk/manifest.json` → `external_toolchain` **22/22** hashes match
+      the in-use 2.5.2 toolchain (BUG-002), 2026-10-19.
+- [x] **T-13** Optional: set `FM1_WASI_SDK` to an extracted WASI SDK 27 to avoid
+      the 518 MiB first-time download. **Done 2026-10-19 via T-38** — SDK
+      moved to `C:\wasi-sdk-27` and exported as a User env var.
+      *(executed by T-38)*
+- [x] **T-14** Confirm toolchain availability and record it in
+      `doc/build-workflow.md` — done 2026-10-19 (22/22 manifest hashes).
+- [x] **T-25** Optional machine cleanup: the system-wide `LIB` environment
+      variable still lists a deleted Visual Studio 18 preview path
+      (`…\MSVC\14.50.35717\lib\x64`). **Done 2026-10-19** — the Machine value
+      now points at MSVC 14.51 + Windows SDK (UAC-elevated); the User-level
+      override is superseded. *(plan.md A)*
+- [x] **T-34** Add a committed `.env.example` (FM1_SOURCE_URL,
+      FM1_PI32_TOOLCHAIN, FM1_WASI_SDK) and reference it from `README.md`;
+      `.env` stays gitignored. **Done 2026-10-19** (`.gitignore` exception
+      `!.env.example`). *(plan.md B)*
+- [x] **T-35** Add a `problemMatcher` to the FM1 VS Code tasks so JieLi-clang
+      diagnostics show in the Problems panel. **Done 2026-10-19** (`$gcc` on
+      both build tasks). *(plan.md B)*
+- [x] **T-38** Set `FM1_WASI_SDK` in `.vscode/build.ps1` (closes T-13).
+      **Done 2026-10-19** — points at `C:\wasi-sdk-27`. *(plan.md B)*
+- [x] **T-27** Add `tools/check-repo.ps1` — automated Level-4 hygiene check
+      (stray artifacts, `build/` gitignored, `.gitattributes` present) + a
+      VS Code task. **Done 2026-10-19** — green, wired as `fm1:check-repo`.
+      *(plan.md B)*
+
+## Engineering (code quality, candidates)
+
+- [ ] **T-31** Replace the bare-metal register addresses in `app/board/audio.c`
+      (`0x51030`, `0x10014`) with named constants in `app/board/fm1_audio.h`.
+      *(plan.md D)*
+- [ ] **T-32** Rename the file-local `crc32()` in `app/samples.c` to
+      `samples_crc32()` (namespace hygiene). *(plan.md D)*
+- [x] **T-33** Document in `app/audio_output.c` why the Bluetooth gain uses
+      `output_gain * 2` while USB uses `>> 7` (16-bit vs Q23 scaling).
+      **Done 2026-10-19.** *(plan.md D)*
+- [x] **T-39** Build `tools/generate-code-index.ps1` + generated
+      `doc/code_index.md` (RAG-style symbol index for `app/` + `web/engine/`).
+      **Done 2026-10-19** — 16 files / 375 symbols; linked from `index.md`.
+      *(plan.md C — enabler for T-28)*
+- [ ] **T-40** Decide BUG-001: open a minimal upstream PR (`build.bat` prefers
+      `pwsh` with a `powershell.exe` fallback) **or** mark it `wont-fix` with a
+      reason. *(plan.md D)*
+- [ ] **T-28** Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page
+      units behind a shared `app/screen_common.h`. Needs T-39; confirm with
+      ARCHITECT/BUILD first. *(plan.md F)*
+- [ ] **T-15** Decide whether a host-side check harness is wanted. **Decided
+      2026-10-19: yes** → implemented as T-29 (host C harness via
+      `FM1_HOST_TEST`). *(superseded by T-29)*
+- [ ] **T-16** Gleanings: file findings from any debugging session back into
+      `doc/`. *(ongoing)*
+
+## Testing
+
+- [ ] **T-29** Activate a host-side C harness via the existing `FM1_HOST_TEST`
+      switch and cover pure APP logic (`project.c` CRC/magic/upgrade,
+      `samples.c` header CRC, tuning capture/apply validation). No new
+      framework; artifacts to `%TEMP%\opencode`. *(plan.md E)*
+- [ ] **T-30** Build a lightweight Node.js WASM harness driving the `sim_*`
+      exports of `sdk/Simulator.js` (boundary rejects + sequencer/tuning
+      behaviour). *(plan.md E)*
+- [ ] **T-24** Run the Level-3 on-device protocol (`doc/test-strategy.md`) once
+      T-11 produced a flashable image; file every fail as `BUG-<n>` in
+      `doc/bugs.md`. Also re-run after T-28. *(plan.md F verification)*
 
 ## From the reference study (wogd-ddsp-trainer)
 
 Full analysis: [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md).
 
 - [x] **T-17** **Adopt:** scripted manual hardware test protocol as the
-      Level-3 section of `doc/test-strategy.md` (13 checks, pass/fail boxes) —
-      2026-10-19.
-- [x] **T-18** **Adopt:** canonical `doc/bugs.md` ledger — `BUG-<n>` IDs and
-      full records only there, ID-only cross-references elsewhere, periodic
-      re-verification written back into the same entry — 2026-10-19.
-- [ ] **T-19** **Consider when the backlog grows:** add a `doc/plan.md`
-      roadmap tier (meta plan / decisions / risks).
-      _Task-ID prefixes and `**Moved to …**` markers are already adopted (T-nn)._
+      Level-3 section of `doc/test-strategy.md` (13 checks) — 2026-10-19.
+- [x] **T-18** **Adopt:** canonical `doc/bugs.md` ledger — 2026-10-19.
 - [x] **T-20** **Adopt:** `## Action items` block for flagged components in
       `doc/licensing.md` — 2026-10-19.
-- [ ] **T-21** **Rule to keep:** any change to `.vscode/tasks.json` updates the
-      task table in `README.md` in the same commit (sibling drifts — 6 vs 10).
-      Kept as a rule rather than an upstream-README edit to avoid widening the
-      upstream diff.
 - [x] **T-22** Reference page `doc/reference-wogd-ddsp-trainer.md` written and
-      linked (2026-10-19).
-- Explicitly **not** adopted: generated `code_wiki.md`/RAG index + post-commit
-  hook, pytest/vitest/CI tasks, installer pipeline, `clean-*` tasks,
-  format-on-save.
+      linked — 2026-10-19.
+- [ ] **T-21** **Rule to keep:** any change to `.vscode/tasks.json` updates the
+      task table in `README.md` in the same commit. *(executed by T-36)*
+- Explicitly **not** adopted: generated `code_wiki.md`/RAG index **from Python +
+      post-commit hook** (a PowerShell code index *is* pursued as T-39),
+      pytest/vitest/CI tasks, installer pipeline, `clean-*` tasks,
+      format-on-save.
 
 ## Done (archive)
 
+- [x] 2026-10-19 — **Project review** (efficiency, dev env, build, agent rules,
+      docs, code) → this `plan.md` roadmap + tasks T-26…T-40 filed
+      (`next-free: T-41`).
 - [x] 2026-10-19 — reference study of `artqcid/wogd-ddsp-trainer`
       (task **T-22**; 2 explore subagents → `doc/reference-wogd-ddsp-trainer.md`).
 - [x] 2026-10-19 — created `main-feature` from `main` at `b178ac4` (V13);
