@@ -53,7 +53,15 @@ variable first:
 $env:PSModulePath = 'C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules'
 ~~~
 
-Both VS Code build tasks do this automatically. Full record: BUG-001.
+**Important:** the reset only works when it happens **inside the running
+`pwsh` process**. PowerShell 7 re-appends its own `$PSHOME\Modules` at
+startup, so a value inherited from a parent shell (or a VS Code
+`options.env` block) is overwritten on the `pwsh` hop and the failure
+returns. Never pass the setup as an inline `-Command` string to a VS Code
+task either — VS Code feeds it through two PowerShell parsers, the inner
+quotes are stripped and `… = C:\Program Files\…` splits into bogus
+commands. The tasks therefore call `.vscode/build.ps1` with `-File`.
+Full record: BUG-001.
 
 ### Stale `LIB` pitfall (packaging step)
 
@@ -67,8 +75,9 @@ session:
 $env:LIB = ''
 ~~~
 
-The VS Code firmware task and the `fm1:build package` launch config do this
-automatically. The underlying machine-environment entry is tracked as T-25.
+`.vscode/build.ps1` (used by the VS Code firmware task) clears it
+automatically, as does the `fm1:build package` launch config. The underlying
+machine-environment entry is tracked as T-25.
 
 ## Build modes
 
@@ -166,14 +175,14 @@ Outputs to expect:
 
 | Task | Effect |
 | --- | --- |
-| `FM-1: Build Firmware Package (.fwsc)` (default, Ctrl+Shift+B) | resets `PSModulePath` (BUG-001), clears `LIB` (stale-VS pitfall), sets `FM1_SOURCE_URL` and `FM1_PI32_TOOLCHAIN=C:\JL\pi32-2.5.2\C$\JL\pi32`, runs `build.bat --package` |
-| `FM-1: Build Web Preview` | resets `PSModulePath` (BUG-001), sets `FM1_SOURCE_URL`, runs `build.bat --web` |
+| `FM-1: Build Firmware Package (.fwsc)` (default, Ctrl+Shift+B) | runs `pwsh -File .vscode/build.ps1 -Mode package` → resets `PSModulePath` *inside* pwsh (BUG-001), clears `LIB` (stale-VS pitfall), sets `FM1_SOURCE_URL` + `FM1_PI32_TOOLCHAIN=C:\JL\pi32-2.5.2\C$\JL\pi32`, then `build.bat --package` |
+| `FM-1: Build Web Preview` | `… -Mode web` → same resets, sets `FM1_SOURCE_URL`, then `build.bat --web` |
 | `fm1:lint` | runs `pwsh doc/lint.ps1` (required by the Post-Task Sync) |
 
-Both build tasks carry the environment they need (`FM1_SOURCE_URL` since
-2026-10-19) plus the two environment workarounds — running them from the
-PowerShell 7 integrated terminal previously hit BUG-001, and a stale machine
-`LIB` broke the packaging step (T-25).
+The environment setup lives in **`.vscode/build.ps1`**, not in the task's
+command line: a task `-Command` string would be re-parsed by two PowerShell
+layers (quote loss), and an `options.env` block is defeated by the `pwsh`
+startup module-path re-append — see the BUG-001 section above.
 
 ## Current workspace status (2026-10-19)
 

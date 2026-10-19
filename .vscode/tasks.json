@@ -4,11 +4,17 @@
     {
       "label": "FM-1: Build Firmware Package (.fwsc)",
       "type": "shell",
-      "command": "powershell",
+      "command": "pwsh",
       "args": [
-        "-Command",
-        "$env:PSModulePath='C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules'; $env:LIB=''; $env:FM1_SOURCE_URL='https://github.com/m-vave/fm1_open'; $env:FM1_PI32_TOOLCHAIN='C:\\JL\\pi32-2.5.2\\C$\\JL\\pi32'; ./build.bat --package"
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\.vscode\\build.ps1",
+        "-Mode",
+        "package"
       ],
+      "options": { "cwd": "${workspaceFolder}" },
       "group": {
         "kind": "build",
         "isDefault": true
@@ -22,11 +28,17 @@
     {
       "label": "FM-1: Build Web Preview",
       "type": "shell",
-      "command": "powershell",
+      "command": "pwsh",
       "args": [
-        "-Command",
-        "$env:PSModulePath='C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules'; $env:FM1_SOURCE_URL='https://github.com/m-vave/fm1_open'; ./build.bat --web"
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\.vscode\\build.ps1",
+        "-Mode",
+        "web"
       ],
+      "options": { "cwd": "${workspaceFolder}" },
       "group": "test",
       "presentation": {
         "reveal": "always",

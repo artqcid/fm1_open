@@ -69,11 +69,23 @@ Borrowed from `artqcid/wogd-ddsp-trainer` (see
   cannot load — auto-load fails and `Get-FileHash` disappears. Directly
   `pwsh`-spawned `powershell.exe` sanitizes `PSModulePath` to the
   Windows-PowerShell paths, which is why only the batch path breaks.
-  Workaround in place: both build tasks in `.vscode/tasks.json` reset
-  `PSModulePath` to
+  Workaround in place: `.vscode/build.ps1` resets `PSModulePath` to
   `C:\Program Files\WindowsPowerShell\Modules;C:\WINDOWS\system32\WindowsPowerShell\v1.0\Modules`
   before calling `build.bat`; documented in `doc/build-workflow.md`.
+  **Refinement (2026-10-19):** `PSModulePath` must be reset **inside the
+  running `pwsh` process** — PowerShell 7 re-appends its own
+  `$PSHOME\Modules` at startup, so neither a parent-shell assignment nor a
+  VS Code `options.env` block survives the `pwsh` hop.
 - `history:` (append-only, newest first)
+  - 2026-10-19 second occurrence via the VS Code task. Two distinct traps:
+    (a) the task passed the setup as an inline `-Command` string, which VS
+    Code sends through two PowerShell parsers — the inner single quotes were
+    stripped, so `$env:PSModulePath= C:\Program Files\…` split into bogus
+    commands; (b) after switching to an `options.env` block the build failed
+    again with `Get-FileHash`, proving the startup re-append described above.
+    Both fixed by `.vscode/build.ps1` (env set after pwsh start, invoked with
+    `-File`, no nested quoting). Verified: `-Mode package` and `-Mode web`
+    both exit 0.
   - 2026-10-19 discovered while running `build.bat --web` from the agent
     shell; isolated via `-File` vs `-Command` and `pwsh` vs `cmd` A/B tests;
     workaround applied in `.vscode/tasks.json` (upstream `build.bat` /

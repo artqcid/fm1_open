@@ -6,6 +6,24 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-19 — VS Code build tasks fixed (BUG-001 recurrence)
+
+- The integrated terminal task failed: VS Code passes an inline `-Command`
+  setup string through two PowerShell parsers, the inner quotes are stripped
+  and `$env:PSModulePath= C:\Program Files\…` splits into bogus commands.
+- Switching to an `options.env` block failed **again** with `Get-FileHash`,
+  which exposed the real mechanism: **PowerShell 7 re-appends its
+  `$PSHOME\Modules` to `PSModulePath` at startup**, so any value inherited
+  from the parent shell is overwritten before `build.bat` runs. The reset
+  must happen inside the running `pwsh` process.
+- Fix: new **`.vscode/build.ps1`** wrapper (`-Mode package|web`) sets
+  `PSModulePath`, `LIB`, `FM1_SOURCE_URL`, `FM1_PI32_TOOLCHAIN` after pwsh
+  has started and then calls `build.bat`; both build tasks invoke it with
+  `-File` (no nested quoting). **Verified: `-Mode package` and `-Mode web`
+  both exit 0.**
+- Docs updated: `doc/bugs.md` BUG-001 (refined root cause + history),
+  `doc/build-workflow.md` (pitfall section, task table, `LIB` note).
+
 ## 2026-10-19 — C:\JL cleanup: superseded 2.5.3 install removed
 
 - `C:\JL\ver.txt` identified the old install as toolchain **2.5.3**; its
