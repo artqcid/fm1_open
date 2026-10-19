@@ -40,6 +40,7 @@ JieLi PI32v2 SoC.
 | --- | --- |
 | [./build-workflow.md](./build-workflow.md) | Build modes, env vars, toolchain, outputs, verification. |
 | [./architecture.md](./architecture.md) | APP vs binary engine, audio path, Web/WASM path, memory sections. |
+| [./screen-split-plan.md](./screen-split-plan.md) | T-28 implementation plan — layered split of `app/screen.c`; `screen_gfx.h` design; exact 12-step guide. |
 | [./code_index.md](./code_index.md) | **Generated** symbol finder across APP/web sources (regenerate with `tools/generate-code-index.ps1`). |
 | [./licensing.md](./licensing.md) | Which license applies to which file? Index into `LICENSE.md` / `THIRD_PARTY.md`. |
 
