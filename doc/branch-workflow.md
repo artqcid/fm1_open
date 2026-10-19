@@ -1,6 +1,6 @@
 ---
 title: Branch Workflow
-description: main stays pristine, main-feature is the integration branch, feature/* branches cut from and merge back into main-feature.
+description: main mirrors upstream plus the upstream-bound commits (T-31/T-28); main-feature is the integration branch; feature/* branches cut from main-feature.
 status: active
 stale_after: 2027-04-19
 ---
@@ -11,22 +11,23 @@ stale_after: 2027-04-19
 
 | Branch | Role | May be committed to? |
 | --- | --- | --- |
-| `main` | tracks upstream `m-vave/fm1_open` — pristine mirror | **never** |
-| `origin/main` | remote mirror of upstream | **never** (fast-forward from upstream only) |
+| `main` | upstream mirror **plus** the upstream-bound commits (T-31/T-28) | only via the upstream-bound topic branch (ff merge) |
+| `origin/main` | our remote; mirrors local `main` | via `main` pushes on explicit request |
 | `upstream` = `m-vave/fm1_open` | source of truth for releases | never (read/pull only) |
-| `origin` = `artqcid/fm1_open` | our remote | only via `main-feature` / `feature/*` pushes on explicit request |
+| `origin` = `artqcid/fm1_open` | our remote | via `main`, `main-feature` and `feature/*` pushes on explicit request |
 | `main-feature` | **integration branch** for all workspace work | yes |
 | `feature/*` | short-lived topic branches cut from `main-feature` | yes |
 
-Current state (2026-10-19): `main-feature` exists locally at `b178ac4`
-("Update FM1 Open to V13"), same commit as `main` / `origin/main`. Nothing of
-ours has been committed yet.
+Current state (2026-10-20): `main` = `b178ac4` (upstream V13) plus the
+upstream-bound commits as they land (T-31 first, T-28 later); `main-feature`
+carries the integration work on top.
 
 ## Rules
 
-1. **`main` stays pristine.** No workspace commits, no local edits that get
-   committed. Sync `main` only from upstream:
-   `git pull upstream main` (then `git push origin main` if explicitly asked).
+1. **`main` is the upstream mirror plus the two upstream-bound commits.**
+   No other workspace work is committed there. Sync the upstream part with
+   `git fetch upstream && git merge upstream/main` (not `--ff-only` once our
+   commits sit on top); push `origin/main` only when explicitly asked.
 2. **Work starts from `main-feature`:**
    `git checkout main-feature`
 3. **Topic branches are cut from `main-feature`, merged back into
@@ -42,11 +43,48 @@ ours has been committed yet.
    ~~~
 
 4. **Never merge a `feature/*` branch into `main`** and never open a PR
-   against upstream without an explicit user request.
+   against upstream without an explicit user request. The standing request
+   covers only the upstream-bound tasks **T-28** and **T-31** (see below).
 5. **`main-feature` is pushed only on explicit user request.** Same for any
    push, commit, tag or PR — global rule `no-auto-commit.md` applies.
-6. Upstream sync into `main-feature` happens by merging `main` (which tracks
-   upstream) into `main-feature`, so our history stays on top of upstream's.
+6. Upstream sync into `main-feature` happens by merging `main` (upstream plus
+   the upstream-bound commits) into `main-feature`, so our history stays on top
+   of upstream's.
+7. **Upstream-bound tasks** (**T-28**, **T-31**) branch from `main`, never
+   from `main-feature` — see below.
+
+## Upstream-bound tasks (exception)
+
+**T-28** (split `app/screen.c`) and **T-31** (named audio register constants)
+are intended for upstream `m-vave/fm1_open` and must not be developed on
+`main-feature`:
+
+1. `git fetch upstream && git checkout main && git merge --ff-only
+   upstream/main` (only while `main` has no own commits; otherwise
+   `git merge upstream/main`).
+2. `git checkout -b feature/upstream-<name>` (cut from `main`).
+3. Implement + verify (both builds, lint).
+4. Commit on the topic branch, then `git checkout main && git merge --ff-only
+   feature/upstream-<name>` so **local `main` also carries the change**.
+5. Push `main` and the topic branch to `origin` on explicit request.
+6. Open a PR from `origin/feature/upstream-<name>` to `m-vave/fm1_open:main`
+   (never from `main`, so later `main` commits do not alter the PR).
+7. Propagate: `git checkout main-feature && git merge main` (so the change is
+   also in the integration branch), then build + lint + push.
+
+All other tasks stay on `main-feature` / `feature/*` cut from it.
+
+### PR lifecycle (acceptance unknown)
+
+| State | Local `main` | Command |
+| --- | --- | --- |
+| PR open / not accepted | upstream + our commits; keep merging upstream | `git checkout main && git merge upstream/main` |
+| Merged as merge commit (SHAs kept) | fast-forward to upstream | `git fetch upstream && git merge --ff-only upstream/main` |
+| Squash/rebase merge (new SHAs) | drop patch-equivalent commits | `git rebase upstream/main` (or `git reset --hard upstream/main` after `git diff upstream/main main` is empty) |
+| Rejected / changes requested | keep local commits; rework on a new topic branch | `git checkout -b feature/upstream-<name>-v2 main` |
+
+After every state change: `git checkout main-feature && git merge main` (or
+`git merge upstream/main`).
 
 ## Naming
 
@@ -67,7 +105,7 @@ ours has been committed yet.
 ~~~powershell
 git fetch upstream
 git checkout main
-git merge --ff-only upstream/main        # main = upstream
+git merge upstream/main                   # upstream + our upstream-bound commits
 git checkout main-feature
 git merge main                            # bring upstream into our work
 # ... work on feature/* ...
@@ -80,6 +118,7 @@ pwsh doc/lint.ps1                         # wiki still consistent?
 
 `fm1_open` is a downstream of a third-party release repo: we periodically
 absorb upstream version drops (V12 → V13 happened as a single upstream commit)
-while carrying our own docs, tooling and patches. Keeping `main` byte-identical
-to upstream makes those drops conflict-free reviewable and keeps
-`sdk/manifest.json` integrity checks meaningful.
+while carrying our own docs, tooling and patches. Keeping `main` limited to the
+upstream mirror plus the two upstream-bound commits keeps the PR diffs minimal
+and makes version drops reviewable; `sdk/manifest.json` integrity checks stay
+meaningful because no SDK/vendor bytes are touched.

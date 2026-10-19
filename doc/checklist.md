@@ -20,6 +20,13 @@ Legend: `[ ]` open · `[~]` in progress / `[x]` done.
 `artqcid/wogd-ddsp-trainer`, see
 [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md)).
 
+**Branch targets:** all tasks are implemented on `main-feature` (or a
+`feature/*` branch cut from it) **except T-28 and T-31**, which are
+**upstream-bound**: base them on `main`, merge them into local `main`, and
+submit them as a PR to `m-vave/fm1_open`; propagate to `main-feature`
+afterwards (see [./branch-workflow.md](./branch-workflow.md)). PR status is
+`PR: pending` until upstream accepts or rejects the PR.
+
 next-free: **T-41**
 
 ## Documentation & workspace
@@ -95,6 +102,7 @@ next-free: **T-41**
 
 - [ ] **T-31** Replace the bare-metal register addresses in `app/board/audio.c`
       (`0x51030`, `0x10014`) with named constants in `app/board/fm1_audio.h`.
+      **Upstream-bound: base on `main`, PR to `m-vave/fm1_open`; PR: pending.**
       *(plan.md D)*
 - [ ] **T-32** Rename the file-local `crc32()` in `app/samples.c` to
       `samples_crc32()` (namespace hygiene). *(plan.md D)*
@@ -110,10 +118,11 @@ next-free: **T-41**
       reason. *(plan.md D)*
 - [ ] **T-28** Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page
       units behind a shared `app/screen_common.h`. Needs T-39; confirm with
-      ARCHITECT/BUILD first. *(plan.md F)*
-- [ ] **T-15** Decide whether a host-side check harness is wanted. **Decided
+      ARCHITECT/BUILD first. **Upstream-bound: base on `main`, PR to
+      `m-vave/fm1_open`; PR: pending.** *(plan.md F)*
+- [x] **T-15** Decide whether a host-side check harness is wanted. **Decided
       2026-10-19: yes** → implemented as T-29 (host C harness via
-      `FM1_HOST_TEST`). *(superseded by T-29)*
+      `FM1_HOST_TEST`). Closed 2026-10-20 as superseded by T-29.
 - [ ] **T-16** Gleanings: file findings from any debugging session back into
       `doc/`. *(ongoing)*
 
@@ -141,8 +150,9 @@ Full analysis: [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.
       `doc/licensing.md` — 2026-10-19.
 - [x] **T-22** Reference page `doc/reference-wogd-ddsp-trainer.md` written and
       linked — 2026-10-19.
-- [ ] **T-21** **Rule to keep:** any change to `.vscode/tasks.json` updates the
-      task table in `README.md` in the same commit. *(executed by T-36)*
+- [x] **T-21** **Rule to keep:** any change to `.vscode/tasks.json` updates the
+      task table in `README.md` in the same commit. Closed 2026-10-20 —
+      executed by T-36 and kept as a standing rule.
 - Explicitly **not** adopted: generated `code_wiki.md`/RAG index **from Python +
       post-commit hook** (a PowerShell code index *is* pursued as T-39),
       pytest/vitest/CI tasks, installer pipeline, `clean-*` tasks,

@@ -28,6 +28,13 @@ dependency-ordered plan.
    (AGENTS.md exception); code edits are delegated to subagents.
 4. On completion: update the `T-nn` row in [./checklist.md](./checklist.md),
    append to [./log.md](./log.md), run `pwsh doc/lint.ps1`.
+5. **Branch target:** all tasks are implemented on `main-feature` except
+   **T-28 and T-31**, which are **upstream-bound**: base them on `main`, merge
+   them into local `main`, and submit a PR to `m-vave/fm1_open`; propagate to
+   `main-feature` afterwards. Never mix other work into `main`.
+6. **Effective order of the open tasks:** bookkeeping (T-15/T-21) → T-31 →
+   T-32 → T-40 → T-23 → T-29 → T-30 → T-24 (hardware) → T-28 (last; needs
+   ARCHITECT/BUILD and Group E).
 
 ## Group A — Quick wins (≤ 30 min each, low risk)
 
@@ -84,7 +91,7 @@ dependency-ordered plan.
 
 | ID | Task | Scope | DoD |
 | --- | --- | --- | --- |
-| T-31 | Replace the bare-metal register addresses in `app/board/audio.c` (`0x51030`, `0x10014`) with named constants in `app/board/fm1_audio.h` | code | No magic I/O addresses without a symbolic name |
+| T-31 | Replace the bare-metal register addresses in `app/board/audio.c` (`0x51030`, `0x10014`) with named constants in `app/board/fm1_audio.h` — **upstream-bound (`main`), PR: pending** | code | No magic I/O addresses without a symbolic name |
 | T-32 | Rename the file-local `crc32()` in `app/samples.c` to `samples_crc32()` (namespace hygiene; the public symbol is `groove_crc32`) | code | No unprefixed file-local symbols |
 | T-40 | Decide BUG-001's fate: open a minimal upstream PR (make `build.bat` prefer `pwsh` with a `powershell.exe` fallback) **or** mark it `wont-fix` with a reason | decision | `doc/bugs.md` BUG-001 status reflects the decision |
 
@@ -120,7 +127,7 @@ coverage is what `build.bat --web` already gives.
 
 | ID | Task | Scope | DoD |
 | --- | --- | --- | --- |
-| T-28 | Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page units behind a shared header | code/arch | Both builds green; page count unchanged; no behaviour change |
+| T-28 | Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page units behind a shared header — **upstream-bound (`main`), PR: pending** | code/arch | Both builds green; page count unchanged; no behaviour change |
 
 **T-28 detail (architectural — confirm with ARCHITECT/BUILD before starting).**
 
@@ -137,6 +144,8 @@ coverage is what `build.bat --web` already gives.
 - **Must not change behaviour.** Verification: `.\build.bat --web` and
   `.\build.bat --package` both green; on-device Level-3 protocol (T-24) after
   the split.
+- **Branch:** upstream-bound — base on `main` and submit a PR to
+  `m-vave/fm1_open`; do not develop it on `main-feature`.
 - **Sequencing:** do this **after** T-39 (the code index makes the split safe
   to delegate to subagents) and **after** Group E, so the new harness covers
   the moved logic.

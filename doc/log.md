@@ -6,6 +6,22 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — Upstream-bound main policy + effective task order
+
+- **T-28** (split `app/screen.c`) and **T-31** (audio register constants) are
+  **upstream-bound**: topic branch from `main` → ff-merge into local `main` →
+  PR to `m-vave/fm1_open` → merge `main` into `main-feature`. All other tasks
+  stay on `main-feature` / `feature/*`.
+- `main` is no longer a pristine mirror: it is upstream **plus** the two
+  upstream-bound commits. Upstream sync uses `git merge upstream/main`; the
+  PR lifecycle (open / merge / squash / reject) is documented in
+  `branch-workflow.md`.
+- Closed bookkeeping **T-15** (superseded by T-29) and **T-21** (standing rule,
+  executed by T-36).
+- Recorded the effective execution order in `plan.md`: T-15/T-21 → T-31 →
+  T-32 → T-40 → T-23 → T-29 → T-30 → T-24 → T-28.
+- Updated `checklist.md`, `plan.md`, `branch-workflow.md`, `log.md`.
+
 ## 2026-10-19 — NotebookLM unblocked (T-05/T-06) + Machine LIB fixed (T-25)
 
 - **T-25 (done):** the elevated Machine `LIB` now points at the installed
