@@ -6,6 +6,17 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — T-31 upstream PR #7
+
+- Implemented T-31: `FM1_AUDIO_PORT_ROUTE` / `FM1_AUDIO_CLOCK_SEL` in
+  `app/board/fm1_audio.h`, used in `app/board/audio.c`; no behaviour change.
+- Verified on the upstream branch via `pwsh -File tools/Build-Web.ps1` and
+  `sdk/Build.ps1 -Package` (V14, both green).
+- Fast-forwarded local `main` to `24beff7`, pushed `main` + branch to
+  `origin`, opened **PR #7** against `m-vave/fm1_open:main`.
+- Merged `main` into `main-feature` (`ebd80ca`) so the change is present in
+  the integration branch.
+
 ## 2026-10-20 — V14 upstream merge + BUG-001/T-40 fixed
 
 - Merged upstream **V14** (`4d26685`, tag `V14`) into `main-feature`;

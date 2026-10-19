@@ -100,10 +100,11 @@ next-free: **T-41**
 
 ## Engineering (code quality, candidates)
 
-- [ ] **T-31** Replace the bare-metal register addresses in `app/board/audio.c`
+- [x] **T-31** Replace the bare-metal register addresses in `app/board/audio.c`
       (`0x51030`, `0x10014`) with named constants in `app/board/fm1_audio.h`.
-      **Upstream-bound: base on `main`, PR to `m-vave/fm1_open`; PR: pending.**
-      *(plan.md D)*
+      **Done 2026-10-20** — upstream-bound, merged to local `main` and
+      `main-feature`; PR [#7](https://github.com/m-vave/fm1_open/pull/7)
+      open. *(plan.md D)*
 - [ ] **T-32** Rename the file-local `crc32()` in `app/samples.c` to
       `samples_crc32()` (namespace hygiene). *(plan.md D)*
 - [x] **T-33** Document in `app/audio_output.c` why the Bluetooth gain uses

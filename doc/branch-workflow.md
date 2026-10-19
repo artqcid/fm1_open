@@ -18,9 +18,9 @@ stale_after: 2027-04-19
 | `main-feature` | **integration branch** for all workspace work | yes |
 | `feature/*` | short-lived topic branches cut from `main-feature` | yes |
 
-Current state (2026-10-20): `main` = `b178ac4` (upstream V13) plus the
-upstream-bound commits as they land (T-31 first, T-28 later); `main-feature`
-carries the integration work on top.
+Current state (2026-10-20): `main` = `4d26685` (upstream V14) + T-31
+(`24beff7`); PR #7 is open. `main-feature` carries the integration work on
+top; T-28 is still pending.
 
 ## Rules
 
