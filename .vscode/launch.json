@@ -18,6 +18,14 @@
       "presentation": { "reveal": "always", "panel": "shared" },
       "environment": [
         {
+          "name": "PSMODULEPATH",
+          "value": "C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules"
+        },
+        {
+          "name": "LIB",
+          "value": ""
+        },
+        {
           "name": "FM1_SOURCE_URL",
           "value": "${config:fm1.sourceUrl}"
         },

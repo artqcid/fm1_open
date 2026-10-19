@@ -53,22 +53,34 @@ audits, heap/ACL pool minimums, startup matching the ROM entry.
 **Status in this workspace:** pending — `FM1_SOURCE_URL` and
 `FM1_PI32_TOOLCHAIN` are not configured. Never report this level as green.
 
-## Level 3 — Runtime evidence on hardware
+## Level 3 — On-device acceptance protocol (manual, scripted)
 
-Not automated; performed manually on the device:
+Not automated — run on real hardware after any change that can be heard, felt
+or persisted. Tick every box; **any fail becomes a `BUG-<n>` entry in
+[`./bugs.md`](./bugs.md) (ledger rules: full record only there).** Record the
+observed values in the notes column instead of "looks fine".
 
-- Timing health: read `struct fm1_audio_stats` (`blocks`, `short_intervals`,
-  `overruns`, `peak_ticks`) and `struct fm1_engine_stats` (`submitted`,
-  `completed`, `underruns`, `midi_dropped`) — nonzero `overruns`/`underruns`
-  means the render budget regressed.
-- Regression probes: USB/BT mixing audible and non-clipping, recording
-  captures what is played, MIDI in/out and BLE role changes behave per the
-  documented async codes.
-- Persistence: save a project and a sample bank, power-cycle, reload;
-  Flash-adjacent changes must prove the upgrade path still works
-  (`tuning_upgrade`).
-- Product safety warnings stay in the docs: back up projects and samples,
-  keep the device powered during saves and firmware updates.
+Run `.\build.bat --package` and flash/install first; note the build id.
+
+| # | Check | Pass | Notes |
+| --- | --- | --- | --- |
+| 1 | Power-on → splash → home screen; no boot loop | ☐ | |
+| 2 | Load the factory demo project; 8 tracks audible, pattern plays at the set tempo | ☐ | |
+| 3 | Every track source type produces sound (DX7, 303, 808, PSG, PLUCK, SAMPLE, …) — switch source per track and play a note | ☐ | |
+| 4 | Sequencer + arpeggiator: start/stop, step edit, lock/alt tuning audible | ☐ | |
+| 5 | Save project, power-cycle, reload — project identical (steps, sources, levels) | ☐ | |
+| 6 | Sample bank: write a bank, rebind, play back, verify CRC/status (`groove_samples_status`) | ☐ | |
+| 7 | USB audio out **and** Bluetooth audio out independently; both mixed if simultaneous; no clipping/DC | ☐ | |
+| 8 | MIDI in → notes sound; MIDI out echoes; USB MIDI + BLE MIDI each work | ☐ | |
+| 9 | BLE role switch (Peripheral ↔ Central), scan list, connect/disconnect, forget bonds — async codes as documented | ☐ | |
+| 10 | Tuning API: capture/apply tables for all 8 tracks, save, power-cycle, re-apply | ☐ | |
+| 11 | Firmware update round-trip with the web workbench (`build/official-web/…`) | ☐ | |
+| 12 | Timing health: `fm1_audio_stats.overruns == 0` and `fm1_engine_stats.underruns == 0` after ≥ 5 min of playback under load | ☐ | |
+| 13 | Display/UI: every page reachable (OVERVIEW, STEPS, FM_EDIT, MIX, EFFECTS, PROJECT), no stuck screens | ☐ | |
+
+Product safety (always, both for testers and for shipped docs): **back up
+projects and samples, and keep the device powered during saves and firmware
+updates.**
 
 ## Level 4 — Boundary/packaging checks (cheap, automated)
 

@@ -62,6 +62,24 @@ commit pins before citing.
 Copyright for company-authored FM1 modifications, FX, arrangements and
 synthesized demo samples: © 2026 珠海笙科智能科技有限公司 (M-VAVE).
 
+## Action items (flagged components)
+
+Pattern borrowed from `artqcid/wogd-ddsp-trainer`'s `oss-dependencies.md`:
+every component that needs a human decision carries an explicit status instead
+of a vague "check licenses" note. Status values: `open` · `in progress` ·
+`verified` · `n/a`. Update the row **in the same change** that resolves it and
+note it in [`./log.md`](./log.md).
+
+| Component | Why flagged | Status | Next step |
+| --- | --- | --- | --- |
+| `sdk/lib/libc.a` (Newlib-derived routines) | Notices live deep inside `THIRD_PARTY.md` § Native C runtime; scope of the derivation for V13 not independently confirmed | `open` | Cross-check the identified routine list against the V13 binary; confirm which Newlib license text applies to our distribution |
+| micro-ecc routines inside `sdk/lib/libfm1_engine.a` | Identified inside a *binary* library — identification must be re-done whenever the engine binary changes | `open` | Re-verify the identification against the current `libfm1_engine.a`; confirm BSD-2-Clause notice coverage |
+| JieLi AC79 SDK material (`sdk/include/*`, tooling) | "Retains its upstream terms" — Apache-2.0 where covered, upstream copyright notice otherwise | `open` | Confirm the pinned upstream commit is still the one we distribute against |
+| `sdk/tools/pack/cfg_tool.bin` | Claimed byte-identical to the official JieLi Apache-2.0 SDK distribution | `open` | Re-verify identity (hash) after any SDK refresh |
+| Boot/update resources + recovery image (`uboot.boot`, `ota.bin`, `boot-config.bin`, `FM-1_015.fwsc`) | Apache-2.0 imposes attribution/NOTICE duties on redistribution | `open` | Confirm the distributed package carries the Apache-2.0 text and marks modified files as required |
+| Third-party DSP pins (Open303, DaisySP, stmlib, MSFA/Dexed, emu2149, SEA, jl-misctools) | Upstream commits are pinned in `THIRD_PARTY.md`; pins drift silently when sources are updated | `open` | Re-pin check after any `third_party/synth/` change |
+| Contributions (PR #2, Vikram Rojo) | Original file licenses retained; integration changes by M-VAVE 2026-10-17 | `verified` | None — recorded in `THIRD_PARTY.md` |
+
 ## What this means for agents
 
 - **Never relicense or strip headers** on third-party or vendor files.

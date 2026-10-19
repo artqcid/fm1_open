@@ -31,6 +31,7 @@ JieLi PI32v2 SoC.
 | [./coding-standards.md](./coding-standards.md) | Which coding rules apply (Clean Code Developer, C/FM1 adaptations)? |
 | [./test-strategy.md](./test-strategy.md) | What can actually be verified, and how? |
 | [./lint.ps1](./lint.ps1) | Script that checks this wiki (orphans, duplicates, stale claims, contradictions). |
+| [./bugs.md](./bugs.md) | **Canonical bug ledger** — full records only here, everything else references `BUG-<n>`. |
 
 ## Engineering
 
@@ -39,6 +40,12 @@ JieLi PI32v2 SoC.
 | [./build-workflow.md](./build-workflow.md) | Build modes, env vars, toolchain, outputs, verification. |
 | [./architecture.md](./architecture.md) | APP vs binary engine, audio path, Web/WASM path, memory sections. |
 | [./licensing.md](./licensing.md) | Which license applies to which file? Index into `LICENSE.md` / `THIRD_PARTY.md`. |
+
+## References
+
+| Page | What it answers |
+| --- | --- |
+| [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md) | What does the sibling project `artqcid/wogd-ddsp-trainer` teach us — adopt / consider / not applicable matrix. |
 
 ## Reference (upstream, not part of this wiki)
 

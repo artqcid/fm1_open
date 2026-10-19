@@ -2,53 +2,36 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "fm1:web",
+      "label": "FM-1: Build Firmware Package (.fwsc)",
       "type": "shell",
       "command": "powershell",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "${workspaceFolder}\\build.bat",
-        "--web"
+        "-Command",
+        "$env:PSModulePath='C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules'; $env:LIB=''; $env:FM1_SOURCE_URL='https://github.com/m-vave/fm1_open'; $env:FM1_PI32_TOOLCHAIN='C:\\JL\\pi32-2.5.2\\C$\\JL\\pi32'; ./build.bat --package"
       ],
-      "options": { "cwd": "${workspaceFolder}" },
-      "group": { "kind": "build", "isDefault": true },
-      "presentation": { "reveal": "always", "panel": "shared" },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
       "problemMatcher": []
     },
     {
-      "label": "fm1:package",
+      "label": "FM-1: Build Web Preview",
       "type": "shell",
       "command": "powershell",
       "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "${workspaceFolder}\\build.bat",
-        "--package"
+        "-Command",
+        "$env:PSModulePath='C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules'; $env:FM1_SOURCE_URL='https://github.com/m-vave/fm1_open'; ./build.bat --web"
       ],
-      "options": { "cwd": "${workspaceFolder}" },
-      "group": "build",
-      "presentation": { "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "fm1:firmware",
-      "type": "shell",
-      "command": "powershell",
-      "args": [
-        "-NoProfile",
-        "-ExecutionPolicy",
-        "Bypass",
-        "-File",
-        "${workspaceFolder}\\build.bat"
-      ],
-      "options": { "cwd": "${workspaceFolder}" },
-      "group": "build",
-      "presentation": { "reveal": "always", "panel": "shared" },
+      "group": "test",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
       "problemMatcher": []
     },
     {
@@ -58,15 +41,10 @@
       "args": ["-NoProfile", "-File", "${workspaceFolder}\\doc\\lint.ps1"],
       "options": { "cwd": "${workspaceFolder}" },
       "group": "test",
-      "presentation": { "reveal": "always", "panel": "shared" },
-      "problemMatcher": []
-    },
-    {
-      "label": "fm1:code-workspace",
-      "type": "shell",
-      "command": "code",
-      "args": ["${workspaceFolder}\\fm1_open.code-workspace"],
-      "presentation": { "reveal": "silent" },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
       "problemMatcher": []
     }
   ]

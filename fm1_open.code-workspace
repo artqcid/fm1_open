@@ -22,8 +22,8 @@
       "*.ld.in": "linker-script"
     },
     "C_Cpp.default.configurationProvider": "ms-vscode.cpptools",
-    "fm1.sourceUrl": "",
-    "fm1.pi32Toolchain": "C:\\JL\\pi32",
+    "fm1.sourceUrl": "https://github.com/m-vave/fm1_open",
+    "fm1.pi32Toolchain": "C:\\JL\\pi32-2.5.2\\C$\\JL\\pi32",
     "fm1.wasiSdk": ""
   },
   "extensions": {

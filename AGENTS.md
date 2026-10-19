@@ -135,6 +135,9 @@ A task is complete only when ALL of the following hold:
 - Run `pwsh doc/lint.ps1` to check orphan pages, stale claims, duplicate
   entries and contradictions.
 - Append to `doc/log.md`.
+- If the task found or fixed a bug: record it in `doc/bugs.md` following the
+  ledger rules (full record and `BUG-<n>` ID only there; reference the ID
+  everywhere else).
 - If a build was not run (missing toolchain/`FM1_SOURCE_URL`): explicitly
   report that the build step is pending.
 
@@ -260,7 +263,10 @@ pollute the upstream diff and can break `sdk/manifest.json` integrity checks.
 - Version identity: `app/version.h` (`FM1_RELEASE_VERSION`,
   `FM1_UPDATE_PRODUCT`).
 - Primary navigation: `doc/index.md`.
-- Checklist: `doc/checklist.md` (open tasks, short descriptions).
+- Bug tracking: `doc/bugs.md` — canonical ledger; `BUG-<n>` IDs and full
+  records live only there, every other page references the ID only.
+- Checklist: `doc/checklist.md` (open tasks, short descriptions, permanent
+  `T-nn` task IDs).
 - Chronological log: `doc/log.md` (append-only, newest first).
 - Build workflow: `doc/build-workflow.md`.
 - Architecture: `doc/architecture.md`.
