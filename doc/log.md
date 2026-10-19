@@ -23,6 +23,10 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
   `FM1_PI32_TOOLCHAIN=C:\JL\pi32-2.5.2\C$\JL\pi32` — Machine/User registry,
   PS profiles, cmd AutoRun and `.env` files had been checked and were empty
   of any FM1/JL/pi32 entries; no stale old-path variable existed to delete.
+- `doc/test-strategy.md` Level-2 snippet updated to the pinned 2.5.2 path
+  (was still `C:\JL\pi32`). Remaining old-path mentions are intentional
+  history (`doc/bugs.md` BUG-002, `doc/log.md`) or upstream files
+  (`README.md`, `README.zh-CN.md`) that stay pristine.
 
 ## 2026-10-19 — BUG-002 fixed: both Definition-of-DoD builds green
 

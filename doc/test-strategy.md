@@ -39,8 +39,9 @@ no unexpanded `/*FM1_...*/` placeholders, `THIRD_PARTY.md` header check.
 ## Level 2 — Firmware build gates (needs toolchain + `FM1_SOURCE_URL`)
 
 ~~~powershell
-$env:FM1_SOURCE_URL      = '...'
-$env:FM1_PI32_TOOLCHAIN  = 'C:\JL\pi32'
+$env:FM1_SOURCE_URL      = 'https://github.com/m-vave/fm1_open'
+$env:FM1_PI32_TOOLCHAIN  = 'C:\JL\pi32-2.5.2\C$\JL\pi32'   # hash-pinned 2.5.2 (BUG-002)
+# both are also set as persistent user-level environment variables
 .\build.bat --package
 Test-Path .\build\dx7\generated\FM1_OFFICIAL_OPEN.fwsc   # must be True
 ~~~
