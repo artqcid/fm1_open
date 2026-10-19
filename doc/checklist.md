@@ -58,8 +58,10 @@ next-free: **T-41**
 - [x] **T-19** **Consider when the backlog grows:** add a `doc/plan.md`
       roadmap tier. **Done 2026-10-19** — `doc/plan.md` created (Tier-1;
       groups A–F, decisions, risks). *(plan.md preamble)*
-- [ ] **T-23** Work through the `## Action items` table in `doc/licensing.md`
+- [x] **T-23** Work through the `## Action items` table in `doc/licensing.md`
       (7 rows, all `open` except PR #2) and update statuses as each is verified.
+      **Done 2026-10-20** — all seven `verified` against V14 (`4d26685`);
+      `cfg_tool.bin` is byte-identical to the official AC79 SDK file.
 
 ## Build & environment
 

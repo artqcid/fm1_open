@@ -6,6 +6,16 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — T-23 licensing action items verified
+
+- Verified all seven `doc/licensing.md` action items against V14 (`4d26685`):
+  `libc.a` manifest hash + Newlib symbols (`__dtoa`, `__gethex`, `__hexnan`,
+  `__mprec_bigtens`), micro-ecc `uECC_*` in the current engine, AC79 pin
+  `5fa84a9`, `cfg_tool.bin` byte-identical to the official
+  `cpu/wl82/tools/cfg_tool.bin` (SHA-256 `276579…`), boot/update hashes +
+  Apache-2.0 notices, DSP pins unchanged (`FM1_SYNTH_API 4U→5U`), PR #2.
+- Statuses updated to `verified`; lint OK.
+
 ## 2026-10-20 — T-32 `samples_crc32` rename
 
 - Renamed the file-local `crc32()` helper in `app/samples.c` to

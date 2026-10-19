@@ -70,15 +70,17 @@ of a vague "check licenses" note. Status values: `open` · `in progress` ·
 `verified` · `n/a`. Update the row **in the same change** that resolves it and
 note it in [`./log.md`](./log.md).
 
+Last full verification: **2026-10-20** against V14 (`4d26685`).
+
 | Component | Why flagged | Status | Next step |
 | --- | --- | --- | --- |
-| `sdk/lib/libc.a` (Newlib-derived routines) | Notices live deep inside `THIRD_PARTY.md` § Native C runtime; scope of the derivation for V13 not independently confirmed | `open` | Cross-check the identified routine list against the V13 binary; confirm which Newlib license text applies to our distribution |
-| micro-ecc routines inside `sdk/lib/libfm1_engine.a` | Identified inside a *binary* library — identification must be re-done whenever the engine binary changes | `open` | Re-verify the identification against the current `libfm1_engine.a`; confirm BSD-2-Clause notice coverage |
-| JieLi AC79 SDK material (`sdk/include/*`, tooling) | "Retains its upstream terms" — Apache-2.0 where covered, upstream copyright notice otherwise | `open` | Confirm the pinned upstream commit is still the one we distribute against |
-| `sdk/tools/pack/cfg_tool.bin` | Claimed byte-identical to the official JieLi Apache-2.0 SDK distribution | `open` | Re-verify identity (hash) after any SDK refresh |
-| Boot/update resources + recovery image (`uboot.boot`, `ota.bin`, `boot-config.bin`, `FM-1_015.fwsc`) | Apache-2.0 imposes attribution/NOTICE duties on redistribution | `open` | Confirm the distributed package carries the Apache-2.0 text and marks modified files as required |
-| Third-party DSP pins (Open303, DaisySP, stmlib, MSFA/Dexed, emu2149, SEA, jl-misctools) | Upstream commits are pinned in `THIRD_PARTY.md`; pins drift silently when sources are updated | `open` | Re-pin check after any `third_party/synth/` change |
-| Contributions (PR #2, Vikram Rojo) | Original file licenses retained; integration changes by M-VAVE 2026-10-17 | `verified` | None — recorded in `THIRD_PARTY.md` |
+| `sdk/lib/libc.a` (Newlib-derived routines) | Notices live deep inside `THIRD_PARTY.md` § Native C runtime; scope of the derivation for V14 not independently confirmed | `verified` | Manifest SHA-256 match; `__dtoa`, `__gethex`, `__hexnan`, `__mprec_bigtens` present in the current archive; Newlib notices retained. Re-check on runtime refresh. |
+| micro-ecc routines inside `sdk/lib/libfm1_engine.a` | Identified inside a *binary* library — identification must be re-done whenever the engine binary changes | `verified` | `uECC_*` symbols present in the current `libfm1_engine.a`; BSD-2-Clause notice in `THIRD_PARTY.md` and embedded workbench. Re-check on engine refresh. |
+| JieLi AC79 SDK material (`sdk/include/*`, tooling) | "Retains its upstream terms" — Apache-2.0 where covered, upstream copyright notice otherwise | `verified` | Pin `5fa84a9b…` recorded in `THIRD_PARTY.md` § SDK notices; 22/22 toolchain hashes match `sdk/manifest.json`. Re-check on SDK refresh. |
+| `sdk/tools/pack/cfg_tool.bin` | Claimed byte-identical to the official JieLi Apache-2.0 SDK distribution | `verified` | SHA-256 `276579…` matches `cpu/wl82/tools/cfg_tool.bin` at pin `5fa84a9b…` (383 bytes). Re-check on SDK refresh. |
+| Boot/update resources + recovery image (`uboot.boot`, `ota.bin`, `boot-config.bin`, `FM-1_015.fwsc`) | Apache-2.0 imposes attribution/NOTICE duties on redistribution | `verified` | Hashes match manifest; Apache-2.0 text + attribution in `THIRD_PARTY.md` and embedded workbench; resources unmodified. Re-check on resource refresh. |
+| Third-party DSP pins (Open303, DaisySP, stmlib, MSFA/Dexed, emu2149, SEA, jl-misctools) | Upstream commits are pinned in `THIRD_PARTY.md`; pins drift silently when sources are updated | `verified` | Pins unchanged; V14's only `third_party/synth` change is `FM1_SYNTH_API 4U→5U` in `engine.h` (no provenance change). |
+| Contributions (PR #2, Vikram Rojo) | Original file licenses retained; integration changes by M-VAVE 2026-10-17 | `verified` | None — recorded in `THIRD_PARTY.md`. |
 
 ## What this means for agents
 
