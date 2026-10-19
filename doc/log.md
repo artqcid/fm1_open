@@ -6,6 +6,17 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-19 — Wiki sync committed and pushed
+
+- Wiki sync committed to `main-feature` as `5c1534f`
+  ("docs: add agent workflow wiki, coding standards and workspace config",
+  16 files, 1483 insertions).
+- Pushed to `origin` (`artqcid/fm1_open`) branch `main-feature`.
+  `main` / `origin/main` remain untouched upstream mirrors of
+  `m-vave/fm1_open`.
+- `opencode.json` was included in the commit (contains local tool/profile
+  paths only — no secrets).
+
 ## 2026-10-19 — Initial FM1 Open V13 wiki sync
 
 - Added `AGENTS.md`: language rule (agent-facing docs in English), todo-first
