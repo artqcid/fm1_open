@@ -1,0 +1,43 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "fm1:build web preview",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": ".\\build.bat --web",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    },
+    {
+      "name": "fm1:build package (firmware + workbench)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": ".\\build.bat --package",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "environment": [
+        {
+          "name": "FM1_SOURCE_URL",
+          "value": "${config:fm1.sourceUrl}"
+        },
+        {
+          "name": "FM1_PI32_TOOLCHAIN",
+          "value": "${config:fm1.pi32Toolchain}"
+        },
+        {
+          "name": "FM1_WASI_SDK",
+          "value": "${config:fm1.wasiSdk}"
+        }
+      ]
+    },
+    {
+      "name": "fm1:lint wiki",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pwsh -NoProfile -File .\\doc\\lint.ps1",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "reveal": "always", "panel": "shared" }
+    }
+  ]
+}

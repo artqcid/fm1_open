@@ -1,0 +1,31 @@
+# EditorConfig — https://editorconfig.org
+# SPDX-License-Identifier: GPL-3.0-only WITH GPL-3.0-linking-exception
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+
+[*.{md,yml,yaml,json,jsonc}]
+indent_size = 2
+trim_trailing_whitespace = false
+
+# Windows command files must keep CRLF.
+[*.bat]
+end_of_line = crlf
+
+# Prebuilt/vendor bytes must never be reflowed (see .gitattributes and
+# doc/licensing.md): integrity checks depend on exact content.
+[sdk/**]
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+end_of_line = unset
+
+[third_party/**]
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+end_of_line = unset
