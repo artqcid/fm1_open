@@ -133,10 +133,11 @@ next-free: **T-41**
 
 ## Testing
 
-- [ ] **T-29** Activate a host-side C harness via the existing `FM1_HOST_TEST`
+- [x] **T-29** Activate a host-side C harness via the existing `FM1_HOST_TEST`
       switch and cover pure APP logic (`project.c` CRC/magic/upgrade,
       `samples.c` header CRC, tuning capture/apply validation). No new
-      framework; artifacts to `%TEMP%\opencode`. *(plan.md E)*
+      framework; artifacts to `%TEMP%\opencode`. **Done 2026-10-20** —
+      `pwsh tests\host\run.ps1` green. *(plan.md E)*
 - [ ] **T-30** Build a lightweight Node.js WASM harness driving the `sim_*`
       exports of `sdk/Simulator.js` (boundary rejects + sequencer/tuning
       behaviour). *(plan.md E)*

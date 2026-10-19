@@ -103,7 +103,7 @@ hardware.
 
 | ID | Task | Scope | DoD |
 | --- | --- | --- | --- |
-| T-29 | Activate a host-side C harness via the existing `FM1_HOST_TEST` switch (builds `FM1_AUDIO_CODE`/`FM1_AUDIO_DATA` as no-ops) and cover pure APP logic | testing | Host build + checks for `project.c`/`samples.c` run green from the scratch dir |
+| T-29 | Activate a host-side C harness via the existing `FM1_HOST_TEST` switch (builds `FM1_AUDIO_CODE`/`FM1_AUDIO_DATA` as no-ops) and cover pure APP logic — **done 2026-10-20** (`tests/host/run.ps1`) | testing | Host build + checks for `project.c`/`samples.c` run green from the scratch dir |
 | T-30 | Build a lightweight Node.js WASM harness driving the `sim_*` exports of `sdk/Simulator.js` | testing | Script asserts boundary rejects + sequencer/tuning behaviour against the WASM build |
 
 **T-29 detail.** `FM1_HOST_TEST` already exists in `sdk/include/fm1.h`; it

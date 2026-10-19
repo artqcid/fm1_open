@@ -6,6 +6,15 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — T-29 host persistence harness
+
+- Added `tests/host/fm1_host_test.c` + `tests/host/run.ps1`: builds
+  `app/project.c`/`app/samples.c` with `FM1_HOST_TEST` against a RAM-backed
+  Flash and the engine control stubs.
+- Checks CRC-32 vector, project save/load + checksum rejection, legacy v3→v4
+  upgrade, tuning `-128`/all-or-nothing, sample header CRC + write order.
+- `pwsh tests/host/run.ps1` green; artifacts stay in `%TEMP%\opencode`.
+
 ## 2026-10-20 — T-23 licensing action items verified
 
 - Verified all seven `doc/licensing.md` action items against V14 (`4d26685`):

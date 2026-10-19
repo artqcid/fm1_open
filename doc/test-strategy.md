@@ -56,6 +56,22 @@ hash-pinned `FM1_PI32_TOOLCHAIN` (JieLi 2.5.2, BUG-002) are configured, so
 `.\build.bat --package` produces `build/dx7/generated/FM1_OFFICIAL_OPEN.fwsc`
 plus the complete workbench. See [`./build-workflow.md`](./build-workflow.md).
 
+## Level 2b — Host persistence checks (T-29)
+
+Needs LLVM clang + the MSVC build tools (headers/libs only; no Visual Studio
+IDE). Compiles `app/project.c` + `app/samples.c` against a RAM-backed Flash and
+the engine control stubs (`FM1_HOST_TEST`).
+
+~~~powershell
+pwsh tests\host\run.ps1
+~~~
+
+Covers the CRC-32 known vector, project save/load plus checksum rejection, the
+legacy v3→v4 upgrade, tuning-block validation (`-128` and all-or-nothing), and
+sample-bank header CRC plus write-order rejection. Artifacts stay in
+`%TEMP%\opencode\fm1_host_test`; the script never writes into the repo.
+**Status: green** (2026-10-20).
+
 ## Level 3 — On-device acceptance protocol (manual, scripted)
 
 Not automated — run on real hardware after any change that can be heard, felt
@@ -96,10 +112,8 @@ updates.**
 
 ## Possible future work (not started)
 
-- `FM1_HOST_TEST` in `sdk/include/fm1.h` already compiles `FM1_AUDIO_CODE` /
-  `FM1_AUDIO_DATA` away — a plausible entry point for host-side checks of APP
-  logic. Explore only with an explicit task (see `doc/checklist.md`).
-- A WASM harness driving `sdk/Simulator.js` (`sim_*` exports) for sequencer /
-  tuning behaviour without hardware.
+- T-30: a Node.js WASM harness driving `sdk/Simulator.js` (`sim_*` exports)
+  for sequencer / tuning behaviour without hardware.
+- Level 3 stays manual until real hardware is available.
 
 Record decisions about this in `doc/checklist.md` and `doc/log.md`.
