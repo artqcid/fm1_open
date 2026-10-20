@@ -236,9 +236,9 @@ upstream-bound**, and nothing here touches `app/`, `sdk/` or the firmware image
 | T-43 | **C-quality + scopes:** chunker for C99 (functions, `static`, `struct`, `enum`, `#define`, `FM1_AUDIO_CODE` attributes), `.c/.h/.inc/.S/.js/.mjs/.ps1/.md/.json`; scope tag per source (`app`/`web`/`sdk`/`vendor`/`docs`/`tools`/`tests`) with a `scope` query filter; stdlib `unittest` fixtures; acceptance queries | tooling/test | Top-3 hit for a fixed query list (`paint_fill`, `groove_screen_web_adjust`, `project checksum`, `FM1_AUDIO_CODE`, …); measured context cost vs `grep`/`read` recorded in `test-strategy.md` |
 | T-44 | **Agent workflow:** project-local skills `knowledge-first`, `post-task-sync`, `definition-of-done` in `.opencode/skills/`; MCP-First section in `AGENTS.md` (core rules stay inline as one-liners); `opencode.json`: RAG permissions for subagents, `codemode: false` for `fm1_rag`, `compaction`; slim `AGENTS.md` (13.5 KB today) | agents | A fresh session follows the lookup chain `index.md` → `query_code_wiki` → `query_code_rag` → `get_rag_chunk`; `explore`/`general` can call `fm1_rag_*` |
 | T-45 | **Sync:** `.githooks/post-commit` + `tools/sync-wiki.ps1` (update only the gitignored DB), auto-refresh of a stale index on query (file stat check), VS Code task `fm1:rag-index`; the committed `doc/code_index.md` is regenerated only in the Post-Task Sync (avoids a dirty tree after every commit) | tooling | Edit → query returns fresh content without a manual index run; hook leaves the working tree clean |
-| T-46 | **NotebookLM:** re-authenticate (`nbml-reauth`, interactive, user-run); source manifest `doc/notebooklm-sources.md` (doc page → notebook source, content hash, last sync); **drift check in `doc/lint.ps1`** (offline: doc changed since last sync); first full sync via `nbml-update`; keep the source count in `AGENTS.md` | knowledge | Notebook holds the curated doc set; `lint.ps1` warns on drift; T-06 digest rule still applies |
+| T-46 | **NotebookLM:** re-authenticate **on demand only** (rule: `nbml-reauth` skill, run by the agent when an auth error occurs; the user logs in only if Google prompts); source manifest `doc/notebooklm-sources.md` (doc page → notebook source, content hash, last sync); **drift check in `doc/lint.ps1`** (offline: doc changed since last sync); first full sync via `nbml-update`; keep the source count in `AGENTS.md` | knowledge | Notebook holds the curated doc set; `lint.ps1` warns on drift; T-06 digest rule still applies |
 | T-47 | **Optional wiki hygiene:** frontmatter `type`/`tags`, stricter `deprecated` lint rule, minimal CI (lint + `check-repo.ps1` + host harness on `windows-latest`; no firmware/web build, the toolchain is not available there) | docs/tooling | Only if T-42…T-46 prove useful; otherwise cancel |
-| T-48 | **OpenCode V2 config migration** (see the next section): project config done 2026-10-20; remaining: optional conversion of the global config, plaintext GitHub token → `{env:…}`, global `instructions` for `no-auto-commit.md` | config | `opencode debug config` shows no warnings; `opencode mcp list` connects all enabled servers |
+| T-48 | **OpenCode V2 config migration** (see the next section): project config done 2026-10-20; remaining (all optional): conversion of the global config, global `instructions` for `no-auto-commit.md`, GitHub token hygiene (`{env:…}`; rotation not required) | config | `opencode debug config` shows no warnings; `opencode mcp list` connects all enabled servers |
 
 **Decisions taken (2026-10-20, per recommendation):** keep the PowerShell
 `doc/code_index.md` (30 KB, readable without MCP, stable context) next to the
@@ -321,7 +321,11 @@ stay entirely in one format.
    (already auto-migrated).
 7. *Secrets:* the global config holds a GitHub token in plain text; move it to
    an environment variable and reference it as `{env:GITHUB_PERSONAL_ACCESS_TOKEN}`
-   (the token was printed in a session log on 2026-10-20 — rotate it).
+   — hygiene only, **not required** (the token has always lived in the local
+   config). Rotation is optional: the value was echoed once into a session
+   tool output on 2026-10-20 (the transcript goes to the model provider and the
+   local session store), so check the token's scopes/expiry and decide. Redact
+   secrets (`-replace 'ghp_\w+','ghp_***'`) when dumping config.
 
 **Global conversion (optional, T-48):** back up `~/.config/opencode/opencode.json`
 and the `agent/` files; convert `mcp` → `mcp.servers`, `agent` → `agents`,
@@ -337,8 +341,8 @@ client at a converted file.
 - T-41 (optional fragment refactoring) **needs** T-39 (code index, glob must be
   extended to `.inc`) and Group E (T-29/T-30 harnesses). T-28 is rejected.
 - T-43 **needs** T-42; T-44 **needs** T-42 (tool names) and should follow T-43
-  (trusted index). T-45 **needs** T-42. T-46 **needs** a user-run re-auth of
-  the NotebookLM profile. T-47 **needs** T-42…T-46 to be useful. T-48 is
+  (trusted index). T-45 **needs** T-42. T-46 **may need** the on-demand
+  `nbml-reauth` skill if the NotebookLM session has expired by then. T-47 **needs** T-42…T-46 to be useful. T-48 is
   independent; its V2 rules apply to the config written by T-42 and T-44.
 - T-38 closes T-13; T-36 executes T-21.
 - Everything else is independent and can be parallelised as separate sessions.

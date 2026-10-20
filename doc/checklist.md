@@ -179,9 +179,11 @@ rules: [`doc/plan.md`](./plan.md#group-g--knowledge-tooling-llm-wiki--mcp--rag--
 - [ ] **T-45** Sync: `.githooks/post-commit` + `tools/sync-wiki.ps1` (DB only),
       auto-refresh on stale index, VS Code task; committed `code_index.md`
       regenerated only in the Post-Task Sync. *(plan.md G; needs T-42)*
-- [ ] **T-46** NotebookLM: re-auth (user-run), source manifest
+- [ ] **T-46** NotebookLM: re-auth only on demand (rule: `nbml-reauth` skill,
+      agent-run when an auth error occurs), source manifest
       `doc/notebooklm-sources.md`, offline drift check in `lint.ps1`, first full
-      sync via `nbml-update`. Auth currently **expired** (2026-10-20).
+      sync via `nbml-update`. Session was found expired on 2026-10-20; handled by
+      the on-demand rule when T-46 starts, no separate action.
       *(plan.md G)*
 - [ ] **T-47** *Optional:* frontmatter `type`/`tags`, stricter `deprecated`
       lint, minimal CI (lint + hygiene + host harness). Only if T-42…T-46 prove
@@ -190,8 +192,9 @@ rules: [`doc/plan.md`](./plan.md#group-g--knowledge-tooling-llm-wiki--mcp--rag--
       `opencode.json` converted to native V2 (`mcp.servers`); `notebooklm_devblogs`
       reconnects; subagent models `general`/`explore` reset to
       `openrouter/upstage/solar-pro4` (global `opencode.json` + `agent/*.md`).
-      **Open:** optional global conversion, GitHub token → `{env:…}` (and rotate
-      it), global `instructions` for `no-auto-commit.md`. *(plan.md G)*
+      **Open (all optional):** global conversion, global `instructions` for
+      `no-auto-commit.md`, GitHub token hygiene (`{env:…}`; rotation not
+      required). *(plan.md G)*
 
 ## From the reference study (wogd-ddsp-trainer)
 

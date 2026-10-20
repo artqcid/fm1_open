@@ -28,7 +28,12 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
   (`opencode/deepseek-v4.1-flash-free` and `reasoningEffort: low` removed);
   verified with `opencode debug agents`. Backups: `%TEMP%\opencode\cfg_backup_20261020`.
 - NotebookLM authentication is **expired** (`notebook_get` → "Authentication
-  expired"); T-46 needs a user-run re-auth.
+  expired"). *Correction (same day):* no separate action — re-auth stays an
+  on-demand rule via the `nbml-reauth` skill (agent-run) when T-46 needs it.
+- *Correction (same day):* the GitHub-token rotation/`{env:…}` advice is
+  optional hygiene, not a requirement; the token was echoed once into a
+  session tool output (config dump without redaction), which is why it was
+  raised.
 
 ## 2026-10-20 — T-28 rejected (flash budget); T-41 byte-neutral option
 
