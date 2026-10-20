@@ -1,6 +1,6 @@
 ---
 title: Branch Workflow
-description: main mirrors upstream plus the upstream-bound commits (T-31/T-28); main-feature is the integration branch; feature/* branches cut from main-feature.
+description: main mirrors upstream plus the upstream-bound commits (tasks tagged upstream-bound, e.g. T-31); main-feature is the integration branch; feature/* branches cut from main-feature.
 status: active
 stale_after: 2027-04-19
 ---
@@ -11,7 +11,7 @@ stale_after: 2027-04-19
 
 | Branch | Role | May be committed to? |
 | --- | --- | --- |
-| `main` | upstream mirror **plus** the upstream-bound commits (T-31/T-28) | only via the upstream-bound topic branch (ff merge) |
+| `main` | upstream mirror **plus** the upstream-bound commits (T-31, future tagged tasks) | only via the upstream-bound topic branch (ff merge) |
 | `origin/main` | our remote; mirrors local `main` | via `main` pushes on explicit request |
 | `upstream` = `m-vave/fm1_open` | source of truth for releases | never (read/pull only) |
 | `origin` = `artqcid/fm1_open` | our remote | via `main`, `main-feature` and `feature/*` pushes on explicit request |
@@ -20,11 +20,12 @@ stale_after: 2027-04-19
 
 Current state (2026-10-20): `main` = `4d26685` (upstream V14) + T-31
 (`24beff7`); PR #7 is open. `main-feature` carries the integration work on
-top; T-28 is still pending.
+top. T-28 (screen split) was upstream-bound but was rejected the same day
+(flash budget); its topic branch was deleted without ever touching `main`.
 
 ## Rules
 
-1. **`main` is the upstream mirror plus the two upstream-bound commits.**
+1. **`main` is the upstream mirror plus the upstream-bound commits.**
    No other workspace work is committed there. Sync the upstream part with
    `git fetch upstream && git merge upstream/main` (not `--ff-only` once our
    commits sit on top); push `origin/main` only when explicitly asked.
@@ -44,26 +45,36 @@ top; T-28 is still pending.
 
 4. **Never merge a `feature/*` branch into `main`** and never open a PR
    against upstream without an explicit user request. The standing request
-   covers only the upstream-bound tasks **T-28** and **T-31** (see below).
+   covers only tasks that are tagged upstream-bound in `doc/checklist.md`
+   (currently **T-31**; see below).
 5. **`main-feature` is pushed only on explicit user request.** Same for any
    push, commit, tag or PR — global rule `no-auto-commit.md` applies.
 6. Upstream sync into `main-feature` happens by merging `main` (upstream plus
    the upstream-bound commits) into `main-feature`, so our history stays on top
    of upstream's.
-7. **Upstream-bound tasks** (**T-28**, **T-31**) branch from `main`, never
-   from `main-feature` — see below.
+7. **Upstream-bound tasks** branch from `main`, never from `main-feature` —
+   see below.
 
 ## Upstream-bound tasks (exception)
 
-**T-28** (split `app/screen.c`) and **T-31** (named audio register constants)
-are intended for upstream `m-vave/fm1_open` and must not be developed on
-`main-feature`:
+*Upstream-bound is a per-task tag, not a fixed list.* Small fixes, hygiene
+changes or other patches that should become a PR to `m-vave/fm1_open` may come
+up at any time. Give each one its own `T-nn` in `doc/checklist.md` tagged
+**upstream-bound** (`PR: pending` until upstream decides). Keep them small and
+single-purpose so the PR diff stays minimal; never bundle workspace tooling,
+docs or unrelated changes into them. Currently tagged: **T-31** (named audio
+register constants; PR #7). T-28 was tagged too but was rejected before any
+PR.
+
+Such a task is intended for upstream `m-vave/fm1_open` and must not be
+developed on `main-feature`:
 
 1. `git fetch upstream && git checkout main && git merge --ff-only
    upstream/main` (only while `main` has no own commits; otherwise
    `git merge upstream/main`).
 2. `git checkout -b feature/upstream-<name>` (cut from `main`).
-3. Implement + verify (both builds, lint).
+3. Implement + verify (both builds, lint, and the app image size against the
+   [flash budget](./build-workflow.md#flash-budget) — only 185 B headroom on V14).
 4. Commit on the topic branch, then `git checkout main && git merge --ff-only
    feature/upstream-<name>` so **local `main` also carries the change**.
 5. Push `main` and the topic branch to `origin` on explicit request.
@@ -119,6 +130,6 @@ pwsh doc/lint.ps1                         # wiki still consistent?
 `fm1_open` is a downstream of a third-party release repo: we periodically
 absorb upstream version drops (V12 → V13 happened as a single upstream commit)
 while carrying our own docs, tooling and patches. Keeping `main` limited to the
-upstream mirror plus the two upstream-bound commits keeps the PR diffs minimal
+upstream mirror plus the (few, small) upstream-bound commits keeps the PR diffs minimal
 and makes version drops reviewable; `sdk/manifest.json` integrity checks stay
 meaningful because no SDK/vendor bytes are touched.

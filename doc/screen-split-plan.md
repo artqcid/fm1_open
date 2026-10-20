@@ -1,15 +1,61 @@
 ---
-title: "T-28 — screen.c split: design & implementation plan"
-status: active
+title: "T-28 — screen.c split: design & implementation plan (REJECTED)"
+status: deprecated
 stale_after: 2027-04-01
 ---
 
-# T-28 — `app/screen.c` split: design & implementation plan
+# T-28 — `app/screen.c` split: design & implementation plan (REJECTED)
 
-> **Branch:** `feature/screen-split` (cut from `main`, upstream-bound PR)  
-> **Prerequisite:** T-39 done (code index at `doc/code_index.md`).  
-> **Verification:** `.\build.bat --web` + `.\build.bat --package` green; no
-> behaviour change; WASM harness (`node tests/wasm/fm1_wasm_test.mjs`) passes.
+> **Status: rejected 2026-10-20 — do not implement.** The multi-translation-unit
+> split cannot fit the firmware flash budget (see [Outcome](#outcome-2026-10-20)).
+> See [./plan.md](./plan.md) → "Option: byte-neutral screen refactoring"
+> (task **T-41**) for the surviving, size-neutral alternative. This page is kept
+> as a historical record of the design and of why it failed.
+
+## Outcome (2026-10-20)
+
+The plan was started on `feature/upstream-screen-split` (steps 1–6 of 12: headers,
+`screen_gfx`, `overview`, `seq`, `mix`, `effects`, `ble`) and then **discarded**
+(branch deleted, last commit `29325bf` only recoverable via reflog). Measured
+with `build.bat`-equivalent firmware builds in a scratch copy
+(`Build.ps1 -FirmwareOnly`, app image bytes; hard limit **453 921**, derived
+from `sdk/Package.cs`, see [./build-workflow.md](./build-workflow.md#flash-budget)):
+
+| Variant | App image | vs limit |
+| --- | ---: | ---: |
+| Baseline (V14, monolithic `screen.c`) | 453 736 | 185 B free |
+| Partial split, `Build.ps1` unchanged (new files `-flto -O2`) | 458 088 | +4 167 B over |
+| Partial split with the §5 flags (`-fno-lto -Oz` for `app/screen*`) | 457 544 | +3 623 B over |
+| Same files as a unity build (one `#include` bundle) | 457 512 | over |
+| Monolith, only file-scope `static` removed (no split at all) | 457 544 | over |
+| Baseline, 214 lines moved into an `#include`d `.inc` fragment, `static` kept | 453 736 | identical |
+
+Findings:
+
+1. **The cost is the linkage change, not the file split.** The partial split cut
+   file-scope `static` symbols in `screen.c` from 137 to 44. Without internal
+   linkage the PI32 toolchain can no longer merge the static globals into one
+   base-register block (`-pi32v2-merge-max-offset`) or inline and drop
+   single-use functions, and every cross-symbol reference becomes a 6-byte
+   absolute address with a relocation (visible in the `screen_mix.c`
+   disassembly: `r8 = 0 <reloc>`). The extracted code grew **+83 %** (4 560 B
+   → 8 328 B of `.text`). The monolith with only `static` stripped lands on the
+   *same* byte count as the real split, so the split's cost is a ceiling the
+   full plan cannot beat: it needs ≥ 3.8 KB and the budget has 185 B.
+2. **A split that keeps every symbol `static` is byte-neutral** (last table row),
+   but then it is a single translation unit again — the layered `extern`
+   architecture of this plan is incompatible with the size budget.
+3. **The build-time motivation does not hold:** `sdk/Build.ps1` deletes and
+   rebuilds all objects on every run (full firmware build ≈ 7 s).
+4. **`sdk/Build.ps1` is hash-pinned in `sdk/manifest.json`**; step 11 of this
+   plan would fail with `SDK payload changed` and also modifies SDK files in an
+   upstream PR.
+5. Minor: the plan replaces `clamp()` by a macro that evaluates its arguments
+   up to three times (31 call sites, behaviour risk).
+6. The navigation goal is already served by the generated
+   [./code_index.md](./code_index.md) (T-39).
+
+Everything below is the original, now superseded design.
 
 ---
 

@@ -29,12 +29,16 @@ dependency-ordered plan.
 4. On completion: update the `T-nn` row in [./checklist.md](./checklist.md),
    append to [./log.md](./log.md), run `pwsh doc/lint.ps1`.
 5. **Branch target:** all tasks are implemented on `main-feature` except
-   **T-28 and T-31**, which are **upstream-bound**: base them on `main`, merge
-   them into local `main`, and submit a PR to `m-vave/fm1_open`; propagate to
-   `main-feature` afterwards. Never mix other work into `main`.
+   tasks explicitly tagged **upstream-bound** (currently **T-31**; T-28 was
+   upstream-bound but was rejected). *Upstream-bound is a per-task tag, not a
+   fixed list*: any small fix or change that should become a PR to
+   `m-vave/fm1_open` is tagged so, based on `main`, merged into local `main`,
+   and submitted from an `origin` topic branch (`feature/upstream-<name>`);
+   propagate to `main-feature` afterwards. Never mix other work into `main`.
+   Full procedure: [./branch-workflow.md](./branch-workflow.md).
 6. **Effective order of the open tasks:** bookkeeping (T-15/T-21) → T-31 →
-   T-32 → T-40 → T-23 → T-29 → T-30 (done) → T-24 (hardware) → T-28 (last; needs
-   ARCHITECT/BUILD and Group E).
+   T-32 → T-40 → T-23 → T-29 → T-30 (done) → T-24 (hardware). T-28 was
+   rejected (flash budget); T-41 is an optional, size-neutral refactoring.
 
 ## Group A — Quick wins (≤ 30 min each, low risk)
 
@@ -129,32 +133,95 @@ coverage is what `build.bat --web` already gives.
 
 | ID | Task | Scope | DoD |
 | --- | --- | --- | --- |
-| T-28 | Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page units behind a shared header — **upstream-bound (`main`), PR: pending** | code/arch | Both builds green; page count unchanged; no behaviour change |
+| T-28 | ~~Split `app/screen.c` (≈ 2 900 lines, 19 pages) into per-page translation units behind a shared header~~ — **REJECTED 2026-10-20** (flash budget) | code/arch | — (closed; record in [`doc/screen-split-plan.md`](./screen-split-plan.md)) |
+| T-41 | *Optional:* byte-neutral refactoring of `app/screen.c` into `#include` fragments (see below) | code/arch | App image stays at the pre-change byte count; both builds + both harnesses green; no behaviour change |
 
-**T-28 detail — full architecture and step-by-step plan: [`doc/screen-split-plan.md`](./screen-split-plan.md)**
+### T-28 — rejected
 
-Key decisions (see plan doc for rationale and exact steps):
+The three-layer split into 11 translation units with `extern` shared state was
+implemented up to step 6 and measured: the app image grew from 453 736 B to
+457 544 B against a hard limit of 453 921 B (185 B headroom). The overhead is
+caused by losing internal linkage (static globals can no longer be merged into
+one base-register block, single-use functions are no longer inlined, every
+cross-symbol access is a 6-byte absolute address), **not** by the file
+separation — a monolith with merely `static` stripped yields the same size. The
+build-time argument does not apply (`Build.ps1` always rebuilds everything,
+≈ 7 s) and the navigation argument is covered by `doc/code_index.md`. Evidence
+and table: [`doc/screen-split-plan.md`](./screen-split-plan.md#outcome-2026-10-20).
+The `feature/upstream-screen-split` branch was deleted.
 
-- **Three-layer architecture** with two public header contracts:
-  `screen_gfx.h` (reusable pixel drawing kit — custom firmware entry point)
-  and `screen_page.h` (mid-layer page contract).
-- **11 new translation units** + 3 headers; `screen.c` slims to ~300 lines.
-  Each page group gets its own `.c`; input state machine in `screen_control.c`;
-  web adapter in `screen_web.c`.
-- Functions crossing TU boundaries are **renamed** with a `screen_` prefix
-  (e.g. `paint_fill` → `screen_fill`, `text` → `screen_text`).
-- **Build.ps1**: three exact `app/screen.c` flag matches replaced with
-  `\ -match '^app/screen'` pattern; `-fno-inline-functions` restricted
-  to `screen.c` and `screen_control.c` only.
-- **Must not change behaviour.** Verification: `.\build.bat --web` and
-  `.\build.bat --package` both green; WASM harness passes unchanged.
-- **Branch:** upstream-bound — base on `main`, PR to `m-vave/fm1_open`.
-- **Sequencing:** after T-39 (code index done ✓) and Group E (T-29, T-30 done ✓).
+### Option: byte-neutral screen refactoring (T-41)
+
+**Status: optional, not scheduled.** Only worth doing if the readability of
+`app/screen.c` (2 994 lines) becomes a concrete maintenance cost. It is the only
+refactoring shape that is compatible with the flash budget, and it is
+generalisable to other large files (`web/engine/sound.c`, `app/project.c`).
+
+**Principle — one translation unit, many files.** The code is moved verbatim
+into `#include`d fragments; the compiler sees (almost) the same translation unit
+as before.
+
+- Fragments live next to the main file with the extension **`.inc`**
+  (`app/screen_gfx.inc`, `app/screen_seq.inc`, …). `Build.ps1` only compiles
+  `.c`/`.S`, so fragments never become their own object; `Build-Web.ps1`
+  already tracks `.inc` as a build input; the build identity hashes every file
+  under `app/`.
+- `app/screen.c` stays the only translation unit and `#include`s the fragments
+  in dependency order. It keeps the shared state definitions.
+- **Every file-scope symbol stays `static`** (functions and variables). No new
+  `extern` declarations, no `screen_internal.h`/`screen_page.h`, no renames, no
+  prefix table, no new public API, no new header contracts.
+- **`sdk/Build.ps1`, `sdk/manifest.json` and all compiler flags stay
+  untouched** (the hash pin and the `app/screen.c` flag matches keep working
+  because the unit name does not change).
+- Moves are verbatim: no logic edits, no reformatting, no macro replacement for
+  functions (e.g. keep `clamp()` a function).
+- Measured proof of concept (2026-10-20, scratch copy): moving a 214-line block
+  into a `.inc` fragment gave exactly 453 736 B, identical to the baseline.
+
+**Cut order (cheapest/safest first; stop whenever the gain is enough):**
+
+1. Browser-simulator adapter (`groove_screen_web_*`, `web_targets[]`,
+   ≈ lines 2702–2915, wrapped in `#ifdef FM1_HOST_TEST` — move the whole
+   `#ifdef … #endif` block).
+2. Pixel layer (`font[]`, `punctuation[]`, paint state, fill/text/line/number/
+   decimal/knob helpers).
+3. Page draw groups in file order: overview + LED matrix, sequencer, FM/DX7 +
+   tone, mix, effects, BLE, project/preset/name/boot, edit overlays.
+4. Input state machine (`apply_controls`, ≈ 720 lines) — last, highest risk.
+   Fragment order must respect `static` forward-declaration needs; add
+   forward declarations at the top of `screen.c` if the include order demands
+   it.
+
+**Gate for every step (mandatory, one commit per fragment):**
+
+1. `pwsh sdk\Build.ps1 -FirmwareOnly` (via `.\build.bat`): the printed
+   `FM1: <n> bytes app image` **must equal the pre-change number**; tolerance
+   ±16 B only if explained (e.g. different ordering of inlining), otherwise
+   revert the step. Never accept a step that eats headroom
+   ([flash budget](./build-workflow.md#flash-budget)).
+2. `.\build.bat --web` green; `node tests\wasm\fm1_wasm_test.mjs` and
+   `pwsh tests\host\run.ps1` green.
+3. `tools/generate-code-index.ps1`: extend its source globs to also read
+   `app/*.inc` (otherwise the index loses the moved symbols), regenerate
+   `doc/code_index.md`, `pwsh doc/lint.ps1` clean.
+4. After the last fragment: Level-3 on-device protocol (T-24) once.
+
+**Expected benefit / non-goals.** Benefit: smaller files, a page can be found
+and edited without scrolling through unrelated code, per-fragment git history.
+Non-goals: separate translation units, reusable `screen_gfx` library for custom
+firmware, encapsulation of the shared UI state, faster builds. Those would need
+internal linkage to be dropped, which the flash budget does not allow.
+
+**Branch:** `main-feature` / `feature/screen-fragments` (not upstream-bound by
+default). It may be tagged upstream-bound later if a PR is wanted; then it must
+be cut from `main` per the branch workflow.
 
 ## Dependencies
 
 - T-06 (Knowledge-Sync) **needs** T-05 (notebook ID).
-- T-28 (screen split) **needs** T-39 (code index) and should follow Group E.
+- T-41 (optional fragment refactoring) **needs** T-39 (code index, glob must be
+  extended to `.inc`) and Group E (T-29/T-30 harnesses). T-28 is rejected.
 - T-38 closes T-13; T-36 executes T-21.
 - Everything else is independent and can be parallelised as separate sessions.
 
@@ -162,7 +229,8 @@ Key decisions (see plan doc for rationale and exact steps):
 
 | Risk | Impact | Mitigation |
 | --- | --- | --- |
-| `screen.c` split introduces a subtle behaviour change | UI/audio regression | Both builds green + Level-3 on-device protocol (T-24) after the split; split by page, commit per page |
+| App image exceeds the flash limit (453 921 B, 185 B headroom on V14) | `--package` fails; blocks every `app/` change | Check `app_image_bytes` on every firmware task; byte-exact gate for T-41; see [flash budget](./build-workflow.md#flash-budget) |
+| `screen.c` fragment refactoring (T-41) introduces a subtle behaviour change | UI regression | Verbatim moves only, one fragment per commit, byte-exact size gate, both harnesses + Level-3 on-device protocol (T-24) after the last fragment |
 | Host harness (T-29) diverges from device behaviour | False confidence | Keep it to *pure* logic (CRC, layout, validation), never DSP/timing; document the boundary in `test-strategy.md` |
 | WASM harness (T-30) coupled to a generated build path | Brittle test | Assert only documented boundary contracts (`sim_*`), not internals |
 | Code index goes stale | Misleading nav | Marked *generated*; regenerate in Post-Task Sync on source change |

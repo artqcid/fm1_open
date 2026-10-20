@@ -1,7 +1,7 @@
 ---
 title: FM1 Open Checklist
 description: Open tasks with short descriptions. Newest state of the workspace backlog.
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 # FM1 Open — Checklist
@@ -21,13 +21,15 @@ Legend: `[ ]` open · `[~]` in progress / `[x]` done.
 [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md)).
 
 **Branch targets:** all tasks are implemented on `main-feature` (or a
-`feature/*` branch cut from it) **except T-28 and T-31**, which are
-**upstream-bound**: base them on `main`, merge them into local `main`, and
-submit them as a PR to `m-vave/fm1_open`; propagate to `main-feature`
-afterwards (see [./branch-workflow.md](./branch-workflow.md)). PR status is
-`PR: pending` until upstream accepts or rejects the PR.
+`feature/*` branch cut from it) **except tasks tagged upstream-bound**
+(currently **T-31**). Upstream-bound is a per-task tag: base such a task on
+`main`, merge it into local `main`, and submit it as a PR to
+`m-vave/fm1_open` from an `origin` topic branch; propagate to `main-feature`
+afterwards (see [./branch-workflow.md](./branch-workflow.md)). New small
+fixes/changes intended for upstream get their own `T-nn` with this tag. PR
+status is `PR: pending` until upstream accepts or rejects the PR.
 
-next-free: **T-41**
+next-free: **T-42**
 
 ## Documentation & workspace
 
@@ -116,17 +118,24 @@ next-free: **T-41**
 - [x] **T-39** Build `tools/generate-code-index.ps1` + generated
       `doc/code_index.md` (RAG-style symbol index for `app/` + `web/engine/`).
       **Done 2026-10-19** — 16 files / 375 symbols; linked from `index.md`.
-      *(plan.md C — enabler for T-28)*
+      *(plan.md C — enabler for T-28/T-41)*
 - [x] **T-40** Decide BUG-001: open a minimal upstream PR (`build.bat` prefers
       `pwsh` with a `powershell.exe` fallback) **or** mark it `wont-fix` with a
       reason. **Done 2026-10-20** — fixed locally on `main-feature` (no upstream
       PR per branch policy); BUG-001 is now `fixed`. *(plan.md D)*
-- [ ] **T-28** Split `app/screen.c` (2,994 lines) into a three-layer
-      architecture: `screen_gfx.h/.c` (reusable pixel kit), `screen_page.h`
-      (mid-layer contract), 9 page modules, `screen_control.c`,
-      `screen_web.c`; `screen.c` slims to ~300 lines. Full plan:
-      [`doc/screen-split-plan.md`](./screen-split-plan.md). **Upstream-bound:
-      base on `main`, PR to `m-vave/fm1_open`; PR: pending.** *(plan.md F)*
+- [x] **T-28** ~~Split `app/screen.c` into a three-layer multi-TU
+      architecture.~~ **Rejected 2026-10-20** — the split grows the app image
+      to 457 544 B against a hard limit of 453 921 B (baseline 453 736 B); the
+      overhead comes from losing `static` linkage. Work discarded, branch
+      `feature/upstream-screen-split` deleted. Evidence:
+      [`doc/screen-split-plan.md`](./screen-split-plan.md#outcome-2026-10-20).
+      Surviving alternative: **T-41**. *(plan.md F)*
+- [ ] **T-41** *Optional:* byte-neutral refactoring of `app/screen.c` into
+      `app/screen_*.inc` fragments included by the single `screen.c`
+      translation unit (all symbols stay `static`, no `Build.ps1`/manifest
+      change, app image must stay byte-identical). Plan, cut order and gate:
+      [`doc/plan.md`](./plan.md#option-byte-neutral-screen-refactoring-t-41).
+      Not scheduled; branch `main-feature`. *(plan.md F)*
 - [x] **T-15** Decide whether a host-side check harness is wanted. **Decided
       2026-10-19: yes** → implemented as T-29 (host C harness via
       `FM1_HOST_TEST`). Closed 2026-10-20 as superseded by T-29.
@@ -146,7 +155,7 @@ next-free: **T-41**
       green against `build/web/simulator.wasm`. *(plan.md E)*
 - [ ] **T-24** Run the Level-3 on-device protocol (`doc/test-strategy.md`) once
       T-11 produced a flashable image; file every fail as `BUG-<n>` in
-      `doc/bugs.md`. Also re-run after T-28. *(plan.md F verification)*
+      `doc/bugs.md`. Also re-run after T-41 (if done). *(plan.md F verification)*
 
 ## From the reference study (wogd-ddsp-trainer)
 

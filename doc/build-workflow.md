@@ -171,6 +171,32 @@ command line: a task `-Command` string would be re-parsed by two PowerShell
 layers (quote loss), and an `options.env` block is defeated by the `pwsh`
 startup module-path re-append — see the BUG-001 section above.
 
+## Flash budget
+
+The 1 MiB package has a hard app-size limit enforced by `sdk/Package.cs`
+(`Package.Create`: "Application does not fit the FM1 layout.").
+
+```text
+max app bytes = FlashLimit 0xFF000 (1 044 480)
+              - user area 536 576 - BT info 4 096 - minimum VM 32 768
+              - boot area 0x4000 (16 384) - app data 0x120 (288) - 383 - 64
+              = 453 921
+```
+
+- The image size is rounded up to 4 096 B (`imageSize`), so the limit is the
+  *app image* (`app_image_bytes` in `build/dx7/firmware-report.json`, printed as
+  `FM1: <n> bytes app image`), not the `.fwsc` file size.
+- **Status V14 (2026-10-20): 453 736 B → 185 B headroom.** Any change under
+  `app/` that grows the image by more than 185 B breaks `--package`. Check the
+  number on every firmware-touching task; a growth > 100 B must be justified.
+- Changing `static` linkage, splitting translation units or touching `-O`/LTO
+  flags moves hundreds of bytes (see
+  [./screen-split-plan.md](./screen-split-plan.md) — rejected T-28).
+- Measure in a scratch copy of the repo when experimenting
+  (`pwsh sdk\Build.ps1 -FirmwareOnly` there); `sdk/Build.ps1` is hash-pinned in
+  `sdk/manifest.json`, so edits to it need the manifest hash updated in the
+  copy only.
+
 ## Current workspace status (2026-10-19)
 
 - `FM1_SOURCE_URL`: **set** — `https://github.com/m-vave/fm1_open`.
@@ -179,8 +205,9 @@ startup module-path re-append — see the BUG-001 section above.
   `C:\JL\pi32-2.5.2\C$\JL\pi32` (BUG-002 fixed).
 - Firmware package: **green** — `build/dx7/generated/FM1_OFFICIAL_OPEN.fwsc`
   plus `build/official-web/FM1-Official-Open-Source.html`; app image
-  440 028 bytes, package fits 1 MiB (image 458 752 + VM 45 056 +
-  user 536 576).
+  453 736 bytes (V14, re-measured 2026-10-20; was 440 028 on V13), package
+  fits 1 MiB (image 471 040 + VM 32 768 + BT 4 096 + user 536 576) — see
+  [Flash budget](#flash-budget).
 - Both Definition-of-DoD build gates now pass on this machine.
 - `FM1_WASI_SDK`: **set** — `C:\wasi-sdk-27` (moved out of `build/tools`;
   T-38). Web builds re-use it instead of re-downloading.

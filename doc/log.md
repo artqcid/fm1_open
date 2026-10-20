@@ -6,7 +6,34 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
-## 2026-10-20 — T-28 screen-split plan
+## 2026-10-20 — T-28 rejected (flash budget); T-41 byte-neutral option
+
+- Analysed the partial T-28 work (`feature/upstream-screen-split`, steps 1–6).
+  Scratch builds (`Build.ps1 -FirmwareOnly`, never touching the repo): baseline
+  V14 = 453 736 B app image; partial split 457 544 B (458 088 B with the
+  unchanged flags); hard limit 453 921 B (derived from `sdk/Package.cs`) →
+  only 185 B headroom.
+- Root cause: loss of internal linkage (`static` 137 → 44), not the file
+  split. Controls: monolith with only `static` stripped = 457 544 B (same);
+  unity build of the split files = 457 512 B; baseline with a 214-line
+  `#include`d `.inc` fragment and `static` kept = 453 736 B (identical).
+- Also found: build-time argument void (`Build.ps1` rebuilds all objects, ≈ 7 s),
+  `sdk/Build.ps1` is hash-pinned in `sdk/manifest.json`, `clamp()` macro risk.
+- **Decision (user): discard the split completely.** Working-tree changes
+  reverted, new `screen_*.c` removed, local branch deleted (last commit
+  `29325bf`, reflog only). `main` was never touched.
+- `doc/screen-split-plan.md` → `status: deprecated` + Outcome section (kept as
+  a record). T-28 closed as rejected in `checklist.md`.
+- New optional task **T-41** (own ID): byte-neutral refactoring via `.inc`
+  fragments in one translation unit — plan, cut order, byte-exact size gate in
+  `plan.md` ("Option: byte-neutral screen refactoring"). Not scheduled.
+- New "Flash budget" section in `doc/build-workflow.md` (limit formula, V14
+  status 453 736 B); stale V13 figure 440 028 B corrected.
+- `branch-workflow.md` / `plan.md` / `checklist.md`: "upstream-bound" is now a
+  per-task tag (currently T-31 only) so future small fixes can be prepared for
+  PRs to `m-vave/fm1_open` with their own `T-nn`; `next-free` is T-42.
+
+## 2026-10-20 — T-28 screen-split plan (superseded by the entry above)
 
 - Analysed `app/screen.c` (2,994 lines): paint layer, 10 page groups,
   input state machine, web adapter.
