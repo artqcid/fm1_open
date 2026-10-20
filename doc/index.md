@@ -26,7 +26,7 @@ JieLi PI32v2 SoC.
 | Page | What it answers |
 | --- | --- |
 | [./log.md](./log.md) | What changed, when. Append-only, newest first. |
-| [./plan.md](./plan.md) | **Tier-1 roadmap** — decisions, risks, task groups A–F. Status lives in `checklist.md`. |
+| [./plan.md](./plan.md) | **Tier-1 roadmap** — decisions, risks, task groups A–G (G = knowledge tooling: RAG/MCP/NotebookLM + OpenCode V2 notes). Status lives in `checklist.md`. |
 | [./checklist.md](./checklist.md) | What is open right now (short task descriptions, status). |
 | [./branch-workflow.md](./branch-workflow.md) | Where may I commit? `main` vs `main-feature` vs `feature/*`. |
 | [./coding-standards.md](./coding-standards.md) | Which coding rules apply (Clean Code Developer, C/FM1 adaptations)? |
@@ -48,7 +48,7 @@ JieLi PI32v2 SoC.
 
 | Page | What it answers |
 | --- | --- |
-| [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md) | What does the sibling project `artqcid/wogd-ddsp-trainer` teach us — adopt / consider / not applicable matrix. |
+| [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md) | What do the sibling projects `artqcid/wogd-ddsp-trainer` and `artqcid/wogd-vst-netsdrstation` teach us — adopt / consider / not applicable matrix; 2026-10-20 update supersedes the "no RAG" decision. |
 
 ## Reference (upstream, not part of this wiki)
 

@@ -29,7 +29,7 @@ afterwards (see [./branch-workflow.md](./branch-workflow.md)). New small
 fixes/changes intended for upstream get their own `T-nn` with this tag. PR
 status is `PR: pending` until upstream accepts or rejects the PR.
 
-next-free: **T-42**
+next-free: **T-49**
 
 ## Documentation & workspace
 
@@ -157,6 +157,42 @@ next-free: **T-42**
       T-11 produced a flashable image; file every fail as `BUG-<n>` in
       `doc/bugs.md`. Also re-run after T-41 (if done). *(plan.md F verification)*
 
+## Knowledge tooling — LLM-Wiki / MCP / RAG / NotebookLM (plan.md G)
+
+Derived from the sibling projects `wogd-ddsp-trainer` and
+`wogd-vst-netsdrstation`; workspace tooling only — `main-feature`, never
+upstream-bound, no firmware impact. Details, design notes and the OpenCode V2
+rules: [`doc/plan.md`](./plan.md#group-g--knowledge-tooling-llm-wiki--mcp--rag--notebooklm).
+
+- [ ] **T-42** RAG-MCP core: `tools/mcp_rag/` + `tools/fm1_mcp_server.py`
+      (FastMCP, SQLite FTS5 trigram + bm25; tools `index_project_code`,
+      `query_code_rag`, `get_rag_chunk`, `query_code_wiki`), `.ragignore`,
+      `tools/requirements.txt`, `.venv` via `uv`, MCP entry `fm1_rag` in
+      `opencode.json` (V2 shape). *(plan.md G)*
+- [ ] **T-43** C-quality + scopes: C99 chunker, `.c/.h/.inc/.S/.js/.ps1/.md`,
+      scope tags + `scope` query filter, `unittest` fixtures, acceptance
+      queries with measured context cost. *(plan.md G; needs T-42)*
+- [ ] **T-44** Agent workflow: local skills `knowledge-first` /
+      `post-task-sync` / `definition-of-done`, MCP-First section in `AGENTS.md`,
+      `opencode.json` (`codemode: false`, subagent `allow` for `fm1_rag_*`,
+      `compaction`), slimmer `AGENTS.md`. *(plan.md G; needs T-42, after T-43)*
+- [ ] **T-45** Sync: `.githooks/post-commit` + `tools/sync-wiki.ps1` (DB only),
+      auto-refresh on stale index, VS Code task; committed `code_index.md`
+      regenerated only in the Post-Task Sync. *(plan.md G; needs T-42)*
+- [ ] **T-46** NotebookLM: re-auth (user-run), source manifest
+      `doc/notebooklm-sources.md`, offline drift check in `lint.ps1`, first full
+      sync via `nbml-update`. Auth currently **expired** (2026-10-20).
+      *(plan.md G)*
+- [ ] **T-47** *Optional:* frontmatter `type`/`tags`, stricter `deprecated`
+      lint, minimal CI (lint + hygiene + host harness). Only if T-42…T-46 prove
+      useful. *(plan.md G)*
+- [~] **T-48** OpenCode V2 config migration. **Done 2026-10-20:** project
+      `opencode.json` converted to native V2 (`mcp.servers`); `notebooklm_devblogs`
+      reconnects; subagent models `general`/`explore` reset to
+      `openrouter/upstage/solar-pro4` (global `opencode.json` + `agent/*.md`).
+      **Open:** optional global conversion, GitHub token → `{env:…}` (and rotate
+      it), global `instructions` for `no-auto-commit.md`. *(plan.md G)*
+
 ## From the reference study (wogd-ddsp-trainer)
 
 Full analysis: [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.md).
@@ -171,10 +207,11 @@ Full analysis: [./reference-wogd-ddsp-trainer.md](./reference-wogd-ddsp-trainer.
 - [x] **T-21** **Rule to keep:** any change to `.vscode/tasks.json` updates the
       task table in `README.md` in the same commit. Closed 2026-10-20 —
       executed by T-36 and kept as a standing rule.
-- Explicitly **not** adopted: generated `code_wiki.md`/RAG index **from Python +
-      post-commit hook** (a PowerShell code index *is* pursued as T-39),
-      pytest/vitest/CI tasks, installer pipeline, `clean-*` tasks,
-      format-on-save.
+- Explicitly **not** adopted: pytest/vitest tasks, installer pipeline,
+      `clean-*` tasks, format-on-save, `WORKSPACE_AGENT_PROMPT.md`, clang-tidy.
+      **Superseded 2026-10-20:** the Python RAG index + post-commit hook and
+      CI are no longer rejected — see group G (T-42…T-47); a PowerShell code
+      index remains as T-39.
 
 ## Done (archive)
 

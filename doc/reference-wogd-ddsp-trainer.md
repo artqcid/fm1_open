@@ -138,3 +138,29 @@ share or Python/ML tooling that has no counterpart in a C firmware repo.
 
 Findings go back into the wiki (Karpathy rule) — this page *is* that loop;
 adoption work items live in `doc/checklist.md`.
+
+## Update 2026-10-20 — decision 7 superseded; second sibling
+
+**Decision 7 above ("`code_wiki.md` + sync script + hook: not applicable") no
+longer holds.** Its premise was "no Python runtime in this repo". Python 3.14,
+`uv` and `fastmcp` are installed on the dev machine, SQLite FTS5 with the trigram
+tokenizer works, and the NotebookLM MCP is itself a Python tool. The adoption is
+now planned as **group G (T-42…T-48)** in [./plan.md](./plan.md); decisions 8–11
+stay valid except that a minimal CI is reconsidered as optional (T-47).
+
+**Second sibling: `artqcid/wogd-vst-netsdrstation`** (native VST3 plugin, C++/CMake
++ Vue WebView). Read 2026-10-20 via the GitHub MCP read tools. It shares the
+RAG-MCP design (`netsdr_mcp_server.py`, FastMCP, SQLite FTS5, the same four tools,
+`.ragignore`, MCP-first rules in `AGENTS.md`, an `opencode.json` with the RAG
+server) as a single 57 KB file adapted from an older project, whereas the trainer
+refactored it into the modular `mcp_rag/` package. Additionally it uses
+NotebookLM as a third knowledge store (notebook ID + source count in
+`AGENTS.md`, "Docs ↔ RAG/Wiki MCP ↔ NotebookLM" sync rule), a GitHub Actions
+matrix with CTest and coverage, and `clang-tidy`. What we take and what we skip
+(workspace prompt duplicating `AGENTS.md`, `clang-tidy` on a JieLi clang fork,
+installer) is listed in plan.md group G.
+
+Trainer-specific additions worth noting: `.opencode/skills/` (`knowledge-first`,
+`post-task-sync`, `definition-of-done`) keep `AGENTS.md` short, per-subagent RAG
+permissions and `compaction` live in `opencode.json`, and the RAG tools support an
+opt-in TOON output format for token-sparing results.

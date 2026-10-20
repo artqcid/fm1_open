@@ -6,6 +6,30 @@ Format: `## YYYY-MM-DD — <short title>` then bullet lines starting with `-`.
 
 ---
 
+## 2026-10-20 — Knowledge-tooling plan (group G), OpenCode V2 config, subagent models
+
+- Studied `artqcid/wogd-ddsp-trainer` and `artqcid/wogd-vst-netsdrstation`
+  (GitHub MCP read): RAG-MCP server (FastMCP, SQLite FTS5 trigram + bm25, four
+  tools, stable chunk IDs, `.ragignore`), generated code wiki, post-commit sync,
+  local skills, per-agent RAG permissions, NotebookLM as third store.
+- New **plan.md group G** (T-42…T-48) + checklist section; `next-free` is T-49.
+  Decisions: keep the PowerShell `code_index.md` next to the RAG; vendor sources
+  indexed but scope-tagged; CI optional (T-47). Reference study decision 7
+  ("no Python RAG") marked superseded in `reference-wogd-ddsp-trainer.md`.
+- **OpenCode V2 (v2.0.32):** V1 config is normalised silently
+  (`opencode debug config`: no warnings). Project `opencode.json` converted to the
+  native V2 shape (`mcp.servers`); `notebooklm_devblogs` reconnects. V2 notes
+  recorded in plan.md (Code Mode → `codemode: false` for `fm1_rag`, `explore`
+  denies MCP tools by default, `external_directory` allowed by default,
+  `instructions` for the global no-auto-commit rule, token in plain text).
+- **Subagent models reset (global config, outside the repo):** `general` and
+  `explore` back to `openrouter/upstage/solar-pro4` in
+  `~/.config/opencode/opencode.json` and `agent/{general,explore}.md`
+  (`opencode/deepseek-v4.1-flash-free` and `reasoningEffort: low` removed);
+  verified with `opencode debug agents`. Backups: `%TEMP%\opencode\cfg_backup_20261020`.
+- NotebookLM authentication is **expired** (`notebook_get` → "Authentication
+  expired"); T-46 needs a user-run re-auth.
+
 ## 2026-10-20 — T-28 rejected (flash budget); T-41 byte-neutral option
 
 - Analysed the partial T-28 work (`feature/upstream-screen-split`, steps 1–6).

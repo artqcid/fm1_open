@@ -1,16 +1,17 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "notebooklm_devblogs": {
-      "type": "local",
-      "command": [
-        "C:\\Users\\marku\\AppData\\Roaming\\uv\\tools\\notebooklm-mcp-server\\Scripts\\python.exe",
-        "C:\\Users\\marku\\AppData\\Roaming\\uv\\tools\\notebooklm-mcp-server\\mcp_entry.py"
-      ],
-      "environment": {
-        "NOTEBOOKLM_MCP_DATA_DIR": "C:\\Users\\marku\\.notebooklm-mcp\\profiles\\devblogs"
-      },
-      "enabled": true
+    "servers": {
+      "notebooklm_devblogs": {
+        "type": "local",
+        "command": [
+          "C:\\Users\\marku\\AppData\\Roaming\\uv\\tools\\notebooklm-mcp-server\\Scripts\\python.exe",
+          "C:\\Users\\marku\\AppData\\Roaming\\uv\\tools\\notebooklm-mcp-server\\mcp_entry.py"
+        ],
+        "environment": {
+          "NOTEBOOKLM_MCP_DATA_DIR": "C:\\Users\\marku\\.notebooklm-mcp\\profiles\\devblogs"
+        }
+      }
     }
   }
 }
